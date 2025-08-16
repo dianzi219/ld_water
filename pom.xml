@@ -1,0 +1,552 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.fastbee</groupId>
+    <artifactId>fastbee</artifactId>
+    <version>3.8.5</version>
+
+    <name>fastbee</name>
+    <url>http://fastbee.cn</url>
+    <description>FastBee物联网平台</description>
+
+    <properties>
+        <fastbee.version>3.8.5</fastbee.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+        <maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
+        <bitwalker.version>1.21</bitwalker.version>
+        <swagger.version>3.0.0</swagger.version>
+        <kaptcha.version>2.3.3</kaptcha.version>
+        <mybatis-spring-boot.version>2.2.0</mybatis-spring-boot.version>
+        <pagehelper.boot.version>1.4.6</pagehelper.boot.version>
+        <fastjson.version>2.0.20</fastjson.version>
+        <oshi.version>6.1.6</oshi.version>
+        <jna.version>5.9.0</jna.version>
+        <commons.io.version>2.11.0</commons.io.version>
+        <commons.fileupload.version>1.4</commons.fileupload.version>
+        <commons.collections.version>3.2.2</commons.collections.version>
+        <poi.version>4.1.2</poi.version>
+        <velocity.version>2.3</velocity.version>
+        <jwt.version>0.9.1</jwt.version>
+        <justAuth.version>1.16.5</justAuth.version>
+        <forest.version>1.5.36</forest.version>
+        <lombok.version>1.18.22</lombok.version>
+        <rocketmq.version>2.2.1</rocketmq.version>
+        <hutool.version>5.8.20</hutool.version>
+        <mapstruct.version>1.5.5.Final</mapstruct.version>
+        <mybatis-plus.version>3.5.3.1</mybatis-plus.version>
+        <mybatis-plus-generator.version>3.5.3.1</mybatis-plus-generator.version>
+        <guava.version>32.0.1-jre</guava.version>
+        <easyexcel.version>3.3.1</easyexcel.version>
+        <liteflow.version>2.12.2</liteflow.version>
+        <redisson.version>3.23.1</redisson.version>
+        <lock4j.version>2.2.7</lock4j.version>
+        <zxing.version>3.3.3</zxing.version>
+        <druid.version>1.2.23</druid.version>
+        <shardingsphere.version>5.1.1</shardingsphere.version>
+        <dynamic-datasource.version>3.3.2</dynamic-datasource.version>
+    </properties>
+
+    <!-- 依赖声明 -->
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- SpringBoot的依赖配置-->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>2.5.14</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- 阿里数据库连接池 -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid</artifactId>
+                <version>${druid.version}</version>
+            </dependency>
+            <!-- https://shardingsphere.apache.org/document/5.0.0/cn/user-manual/shardingsphere-jdbc/usage/sharding/spring-boot-starter/ -->
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
+                <version>${shardingsphere.version}</version>
+            </dependency>
+
+            <!-- 解析客户端操作系统、浏览器等 -->
+            <dependency>
+                <groupId>eu.bitwalker</groupId>
+                <artifactId>UserAgentUtils</artifactId>
+                <version>${bitwalker.version}</version>
+            </dependency>
+
+            <!-- SpringBoot集成mybatis框架 -->
+            <!--            <dependency>-->
+            <!--                <groupId>org.mybatis.spring.boot</groupId>-->
+            <!--                <artifactId>mybatis-spring-boot-starter</artifactId>-->
+            <!--                <version>${mybatis-spring-boot.version}</version>-->
+            <!--            </dependency>-->
+
+            <!-- mybatis plus -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-generator</artifactId>
+                <version>${mybatis-plus-generator.version}</version>
+            </dependency>
+
+            <!-- pagehelper 分页插件 -->
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper-spring-boot-starter</artifactId>
+                <version>${pagehelper.boot.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.mybatis</groupId>
+                        <artifactId>mybatis</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>mybatis-spring</artifactId>
+                        <groupId>org.mybatis</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>jsqlparser</artifactId>
+                        <groupId>com.github.jsqlparser</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!-- 获取系统信息 -->
+            <dependency>
+                <groupId>com.github.oshi</groupId>
+                <artifactId>oshi-core</artifactId>
+                <version>${oshi.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>net.java.dev.jna</groupId>
+                <artifactId>jna</artifactId>
+                <version>${jna.version}</version>
+            </dependency>
+
+            <!-- Swagger3依赖 -->
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-boot-starter</artifactId>
+                <version>${swagger.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>io.swagger</groupId>
+                        <artifactId>swagger-models</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!-- io常用工具类 -->
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons.io.version}</version>
+            </dependency>
+
+            <!-- 文件上传工具类 -->
+            <dependency>
+                <groupId>commons-fileupload</groupId>
+                <artifactId>commons-fileupload</artifactId>
+                <version>${commons.fileupload.version}</version>
+            </dependency>
+
+            <!-- excel工具 -->
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>${poi.version}</version>
+            </dependency>
+
+            <!-- velocity代码生成使用模板 -->
+            <dependency>
+                <groupId>org.apache.velocity</groupId>
+                <artifactId>velocity-engine-core</artifactId>
+                <version>${velocity.version}</version>
+            </dependency>
+
+            <!-- collections工具类 -->
+            <dependency>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
+                <version>${commons.collections.version}</version>
+            </dependency>
+
+            <!--lombok-->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+
+            <!-- 阿里JSON解析器 -->
+            <dependency>
+                <groupId>com.alibaba.fastjson2</groupId>
+                <artifactId>fastjson2</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
+
+            <!-- Token生成与解析-->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jwt.version}</version>
+            </dependency>
+
+            <!-- 验证码 -->
+            <dependency>
+                <groupId>pro.fessional</groupId>
+                <artifactId>kaptcha</artifactId>
+                <version>${kaptcha.version}</version>
+            </dependency>
+
+            <!--rocket-mq-->
+            <dependency>
+                <groupId>org.apache.rocketmq</groupId>
+                <artifactId>rocketmq-spring-boot-starter</artifactId>
+                <version>${rocketmq.version}</version>
+            </dependency>
+
+            <!--Hutool Java工具包-->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+
+            <!-- 核心模块-->
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>fastbee-framework</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+
+            <!-- 通用工具-->
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>fastbee-common</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>fastbee-iot-data</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>fastbee-message-bus</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+
+            <!--服务层模块-->
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>fastbee-server</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+
+            <!--工具插件管理类-->
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>fastbee-plugs</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>fastbee-iot-service</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>fastbee-system-service</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+
+            <!--定时模块-->
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>fastbee-quartz</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+            <!--代码生成模块-->
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>fastbee-generator</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>fastbee-oss</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+
+            <!--基于netty的MqttBroker-->
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>mqtt-broker</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>http-server</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>coap-server</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>sip-server</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+            <!--协议层模块-->
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>fastbee-protocol</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+            <!--controller层模块-->
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>fastbee-open-api</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+            <!--modbus协议模块-->
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>fastbee-protocol-collect</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+            <!--服务核心模块-->
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>iot-server-core</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+            <!--服务基础模块-->
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>base-server</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+            <!--mq模块-->
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>fastbee-mq</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+            <!--服务启动模块-->
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>boot-strap</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+            <!--协议解析基础模块-->
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>fastbee-protocol-base</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>fastbee-http</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>fastbee-mqtt-client</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId> <!-- use mapstruct-jdk8 for Java 8 or higher -->
+                <version>${mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-jdk8</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson-spring-boot-starter</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>lock4j-redisson-spring-boot-starter</artifactId>
+                <version>${lock4j.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>redisson-spring-boot-starter</artifactId>
+                        <groupId>org.redisson</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>easyexcel-core</artifactId>
+                <version>${easyexcel.version}</version>
+            </dependency>
+
+            <!-- 通知模块 -->
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>fastbee-notify</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+            <!-- 通知配置模块 -->
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>fastbee-notify-web</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>fastbee-notify-core</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+
+            <!-- 工具插件模块：oauth2.0 -->
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>fastbee-oauth</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+
+<!--            &lt;!&ndash; 音箱接入模块 &ndash;&gt;-->
+<!--            <dependency>-->
+<!--                <groupId>com.fastbee</groupId>-->
+<!--                <artifactId>fastbee-speaker</artifactId>-->
+<!--                <version>${fastbee.version}</version>-->
+<!--            </dependency>-->
+
+<!--            &lt;!&ndash; 小度音箱模块 &ndash;&gt;-->
+<!--            <dependency>-->
+<!--                <groupId>com.fastbee</groupId>-->
+<!--                <artifactId>fastbee-link-dueros</artifactId>-->
+<!--                <version>${fastbee.version}</version>-->
+<!--            </dependency>-->
+
+            <!-- 组态模块 -->
+            <dependency>
+                <groupId>com.fastbee</groupId>
+                <artifactId>fastbee-scada</artifactId>
+                <version>${fastbee.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.zxing</groupId>
+                <artifactId>core</artifactId>
+                <version>${zxing.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.zxing</groupId>
+                <artifactId>javase</artifactId>
+                <version>${zxing.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <modules>
+        <module>fastbee-admin</module>
+        <module>fastbee-framework</module>
+        <module>fastbee-plugs</module>
+        <module>fastbee-common</module>
+        <module>fastbee-iot-data</module>
+        <module>fastbee-mq</module>
+        <module>fastbee-server</module>
+        <module>fastbee-protocol</module>
+        <module>fastbee-open-api</module>
+        <module>fastbee-service</module>
+        <module>fastbee-record</module>
+        <module>fastbee-notify</module>
+<!--        <module>fastbee-speaker</module>-->
+<!--        <module>fastbee-scada</module>-->
+    </modules>
+    <packaging>pom</packaging>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <repositories>
+        <repository>
+            <id>public</id>
+            <name>aliyun nexus</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>public</id>
+            <name>aliyun nexus</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+</project>
