@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fastbee.system.mapper.AppLanguageMapper">
+
+    <resultMap type="com.fastbee.system.domain.AppLanguage" id="AppLanguageResult">
+        <result property="id"    column="id"    />
+        <result property="language"    column="language"    />
+        <result property="country"    column="country"    />
+        <result property="timeZone"    column="time_zone"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="langName"    column="lang_name"    />
+    </resultMap>
+
+    <sql id="selectAppLanguageVo">
+        select id, language, country, time_zone, create_by, create_time, lang_name from app_language
+    </sql>
+
+    <select id="selectAppLanguageList" parameterType="com.fastbee.system.domain.AppLanguage" resultMap="AppLanguageResult">
+        <include refid="selectAppLanguageVo"/>
+        <where>
+            <if test="language != null  and language != ''"> and language = #{language}</if>
+            <if test="country != null  and country != ''"> and country = #{country}</if>
+            <if test="timeZone != null  and timeZone != ''"> and time_zone = #{timeZone}</if>
+            <if test="langName != null  and langName != ''"> and lang_name like concat('%', #{langName}, '%')</if>
+        </where>
+    </select>
+
+    <select id="selectAppLanguageById" parameterType="Long" resultMap="AppLanguageResult">
+        <include refid="selectAppLanguageVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertAppLanguage" parameterType="com.fastbee.system.domain.AppLanguage">
+        insert into app_language
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="language != null">language,</if>
+            <if test="country != null">country,</if>
+            <if test="timeZone != null">time_zone,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="langName != null">lang_name,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="language != null">#{language},</if>
+            <if test="country != null">#{country},</if>
+            <if test="timeZone != null">#{timeZone},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="langName != null">#{langName},</if>
+         </trim>
+    </insert>
+
+    <update id="updateAppLanguage" parameterType="com.fastbee.system.domain.AppLanguage">
+        update app_language
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="language != null">language = #{language},</if>
+            <if test="country != null">country = #{country},</if>
+            <if test="timeZone != null">time_zone = #{timeZone},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="langName != null">lang_name = #{langName},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteAppLanguageById" parameterType="Long">
+        delete from app_language where id = #{id}
+    </delete>
+
+    <delete id="deleteAppLanguageByIds" parameterType="String">
+        delete from app_language where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
