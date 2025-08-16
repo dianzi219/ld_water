@@ -1,0 +1,155 @@
+package ${packageName}.service.impl;
+
+import java.util.List;
+import java.util.Map;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+#foreach ($column in $columns)
+#if($column.javaField == 'createTime' || $column.javaField == 'updateTime')
+import com.fastbee.common.utils.DateUtils;
+#break
+#end
+#end
+import org.springframework.stereotype.Service;
+import java.util.Objects;
+#if($table.sub)
+import java.util.ArrayList;
+import org.springframework.transaction.annotation.Transactional;
+import ${packageName}.domain.${subClassName};
+#end
+import com.fastbee.common.utils.StringUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import ${packageName}.mapper.${ClassName}Mapper;
+import ${packageName}.domain.${ClassName};
+import ${packageName}.service.I${ClassName}Service;
+
+/**
+ * ${functionName}Service业务层处理
+ *
+ * @author ${author}
+ * @date ${datetime}
+ */
+@Service
+public class ${ClassName}ServiceImpl extends ServiceImpl<${ClassName}Mapper,${ClassName}> implements I${ClassName}Service {
+
+    /**
+     * 查询${functionName}
+     *
+     * @param ${pkColumn.javaField} 主键
+     * @return ${functionName}
+     */
+    @Override
+    @Cacheable(cacheNames = "${ClassName}", key = "#${pkColumn.javaField}")
+    // 查询时更新key缓存，更新和删除时删除缓存，新增时不更新，下一次查询会更新缓存
+    public ${ClassName} queryByIdWithCache(${pkColumn.javaType} ${pkColumn.javaField}){
+        return this.getById(${pkColumn.javaField});
+    }
+
+    /**
+     * 查询${functionName}
+     *
+     * @param ${pkColumn.javaField} 主键
+     * @return ${functionName}
+     */
+    @Override
+    @Cacheable(cacheNames = "${ClassName}", key = "#${pkColumn.javaField}")
+    // 查询时更新key缓存，更新和删除时删除缓存，新增时不更新，下一次查询会更新缓存
+    public ${ClassName} select${ClassName}ById(${pkColumn.javaType} ${pkColumn.javaField}){
+        return this.getById(${pkColumn.javaField});
+    }
+
+    /**
+     * 查询${functionName}列表
+     *
+     * @param ${className} ${functionName}
+     * @return ${functionName}
+     */
+    @Override
+    public List<${ClassName}> select${ClassName}List(${ClassName} ${className}) {
+        LambdaQueryWrapper<${ClassName}> lqw = buildQueryWrapper(${className});
+        return baseMapper.selectList(lqw);
+    }
+
+    private LambdaQueryWrapper<${ClassName}> buildQueryWrapper(${ClassName} query) {
+        Map<String, Object> params = query.getParams();
+        LambdaQueryWrapper<${ClassName}> lqw = Wrappers.lambdaQuery();
+        #foreach($column in $columns)
+            #if($column.query)
+                #set($queryType=$column.queryType)
+                #set($javaField=$column.javaField)
+                #set($javaType=$column.javaType)
+                #set($columnName=$column.columnName)
+                #set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
+                #set($mpMethod=$column.queryType.toLowerCase())
+                #if($queryType != 'BETWEEN')
+                    #if($javaType == 'String')
+                        #set($condition='StringUtils.isNotBlank(query.get'+$AttrName+'())')
+                    #else
+                        #set($condition='query.get'+$AttrName+'() != null')
+                    #end
+                    lqw.$mpMethod($condition, ${ClassName}::get$AttrName, query.get$AttrName());
+                #else
+                    lqw.between(params.get("begin$AttrName") != null && params.get("end$AttrName") != null,
+                        ${ClassName}::get$AttrName ,params.get("begin$AttrName"), params.get("end$AttrName"));
+                #end
+            #end
+        #end
+
+        if (!Objects.isNull(params.get("beginTime")) &&
+        !Objects.isNull(params.get("endTime"))) {
+            lqw.between(${ClassName}::getCreateTime, params.get("beginTime"), params.get("endTime"));
+        }
+        return lqw;
+    }
+
+    /**
+     * 新增${functionName}
+     *
+     * @param add ${functionName}
+     * @return 是否新增成功
+     */
+    @Override
+    public Boolean insertWithCache(${ClassName} add) {
+        validEntityBeforeSave(add);
+        return this.save(add);
+    }
+
+    /**
+     * 修改${functionName}
+     *
+     * @param update ${functionName}
+     * @return 是否修改成功
+     */
+    @Override
+    @CacheEvict(cacheNames = "${ClassName}", key = "#update.${pkColumn.javaField}")
+    public Boolean updateWithCache(${ClassName} update) {
+        validEntityBeforeSave(update);
+        return this.updateById(update);
+    }
+
+    /**
+     * 保存前的数据校验
+     */
+    private void validEntityBeforeSave(${ClassName} entity){
+        //TODO 做一些数据校验,如唯一约束
+    }
+
+    /**
+     * 校验并批量删除${functionName}信息
+     *
+     * @param ids     待删除的主键集合
+     * @param isValid 是否进行有效性校验
+     * @return 是否删除成功
+     */
+    @Override
+    @CacheEvict(cacheNames = "${ClassName}", keyGenerator = "deleteKeyGenerator" )
+    public Boolean deleteWithCacheByIds(${pkColumn.javaType}[] ids, Boolean isValid) {
+        if(isValid){
+            //TODO 做一些业务上的校验,判断是否需要校验
+        }
+        return this.removeByIds(Arrays.asList(ids));
+    }
+
+}

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.fastbee.pay</groupId>
+        <artifactId>fastbee-pay</artifactId>
+        <version>3.8.5</version>
+    </parent>
+
+    <groupId>com.fastbee.pay.core</groupId>
+    <artifactId>fastbee-pay-core</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.fastbee.pay.api</groupId>
+            <artifactId>fastbee-pay-api</artifactId>
+            <version>3.8.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>13.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fastbee</groupId>
+            <artifactId>fastbee-framework</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

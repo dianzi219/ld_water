@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fastbee.iot.mapper.ModbusParamsMapper">
+
+    <resultMap type="com.fastbee.iot.domain.ModbusParams" id="ModbusParamsResult">
+        <result property="id"    column="id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="pollType"    column="poll_type"    />
+        <result property="slaveId"    column="slave_id"    />
+        <result property="statusDeter"    column="status_deter"    />
+        <result property="deterTimer"    column="deter_timer"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="pollLength" column="poll_length" />
+    </resultMap>
+
+    <sql id="selectModbusParamsVo">
+        select id, product_id, poll_type,poll_length, slave_id, status_deter, deter_timer, create_by, create_time, update_by, update_time, remark from iot_modbus_params
+    </sql>
+
+
+    <select id="getModbusParamsByProductId" resultMap="ModbusParamsResult">
+        <include refid="selectModbusParamsVo"/>
+        where product_id = #{product_id}
+    </select>
+
+    <select id="getModbusParamsByDeviceId" resultMap="ModbusParamsResult">
+        SELECT
+            p.id,
+            p.product_id,
+            p.poll_type,
+            p.poll_length,
+            p.slave_id,
+            p.status_deter,
+            p.deter_timer
+        FROM
+            iot_modbus_params p inner join
+                iot_device d on p.product_id = d.product_id
+        where  d.device_id = #{deviceId}
+    </select>
+</mapper>

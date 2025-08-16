@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fastbee.notify.mapper.NotifyLogMapper">
+
+    <resultMap type="NotifyLog" id="NotifyLogResult">
+        <result property="id"    column="id"    />
+        <result property="notifyTemplateId"    column="notify_template_id"    />
+        <result property="channelId"    column="channel_id"    />
+        <result property="msgContent"    column="msg_content"    />
+        <result property="sendAccount"    column="send_account"    />
+        <result property="sendStatus"    column="send_status"    />
+        <result property="resultContent"    column="result_content"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="tenantName"    column="tenant_name"    />
+        <result property="serviceCode"    column="service_code"    />
+    </resultMap>
+
+    <sql id="selectNotifyLogVo">
+        select id, notify_template_id, channel_id, msg_content, send_account, send_status, result_content,service_code, create_by, create_time, update_by, update_time, del_flag, tenant_id, tenant_name from notify_log
+    </sql>
+
+    <select id="selectNotifyLogList" parameterType="NotifyLog" resultMap="NotifyLogResult">
+        <include refid="selectNotifyLogVo"/>
+        <where>
+            <if test="notifyTemplateId != null "> and notify_template_id = #{notifyTemplateId}</if>
+            <if test="channelId != null "> and channel_id = #{channelId}</if>
+            <if test="msgContent != null  and msgContent != ''"> and msg_content = #{msgContent}</if>
+            <if test="sendAccount != null  and sendAccount != ''"> and send_account like concat("%", #{sendAccount}, "%")</if>
+            <if test="sendStatus != null "> and send_status = #{sendStatus}</if>
+            <if test="resultContent != null  and resultContent != ''"> and result_content = #{resultContent}</if>
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+            <if test="serviceCode != null  and serviceCode != ''"> and service_code = #{serviceCode}</if>
+            <if test="tenantId != null "> and tenant_id = #{tenantId}</if>
+        </where>
+        order by id desc
+    </select>
+
+    <select id="selectNotifyLogById" parameterType="Long" resultMap="NotifyLogResult">
+        <include refid="selectNotifyLogVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertNotifyLog" parameterType="NotifyLog" useGeneratedKeys="true" keyProperty="id">
+        insert into notify_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="notifyTemplateId != null">notify_template_id,</if>
+            <if test="channelId != null">channel_id,</if>
+            <if test="msgContent != null">msg_content,</if>
+            <if test="sendAccount != null">send_account,</if>
+            <if test="sendStatus != null">send_status,</if>
+            <if test="resultContent != null">result_content,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="tenantName != null and tenantName != ''">tenant_name,</if>
+            <if test="serviceCode != null">service_code,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="notifyTemplateId != null">#{notifyTemplateId},</if>
+            <if test="channelId != null">#{channelId},</if>
+            <if test="msgContent != null">#{msgContent},</if>
+            <if test="sendAccount != null">#{sendAccount},</if>
+            <if test="sendStatus != null">#{sendStatus},</if>
+            <if test="resultContent != null">#{resultContent},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="tenantName != null and tenantName != ''">#{tenantName},</if>
+            <if test="serviceCode != null">#{serviceCode},</if>
+         </trim>
+    </insert>
+
+    <update id="updateNotifyLog" parameterType="NotifyLog">
+        update notify_log
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="notifyTemplateId != null">notify_template_id = #{notifyTemplateId},</if>
+            <if test="channelId != null">channel_id = #{channelId},</if>
+            <if test="msgContent != null">msg_content = #{msgContent},</if>
+            <if test="sendAccount != null">send_account = #{sendAccount},</if>
+            <if test="sendStatus != null">send_status = #{sendStatus},</if>
+            <if test="resultContent != null">result_content = #{resultContent},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="tenantName != null and tenantName != ''">tenant_name = #{tenantName},</if>
+            <if test="serviceCode != null">service_code = #{serviceCode},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteNotifyLogById" parameterType="Long">
+        delete from notify_log where id = #{id}
+    </delete>
+
+    <delete id="deleteNotifyLogByIds" parameterType="String">
+        delete from notify_log where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

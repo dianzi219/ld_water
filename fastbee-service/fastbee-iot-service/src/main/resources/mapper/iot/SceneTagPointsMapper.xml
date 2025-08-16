@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fastbee.iot.mapper.SceneTagPointsMapper">
+
+    <resultMap type="SceneTagPoints" id="SceneTagPointsResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="alias"    column="alias"    />
+        <result property="tagId"    column="tag_id"    />
+        <result property="operation"    column="operation"    />
+        <result property="variableType"    column="variable_type"    />
+        <result property="sceneModelDataId"    column="scene_model_data_id"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectSceneTagPointsVo">
+        select id, name, alias, tag_id, operation, variable_type, scene_model_data_id, del_flag, create_by, create_time, update_by, update_time, remark from scene_tag_points
+    </sql>
+
+    <select id="selectSceneTagPointsList" parameterType="SceneTagPoints" resultMap="SceneTagPointsResult">
+        <include refid="selectSceneTagPointsVo"/>
+        <where>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="alias != null  and alias != ''"> and alias = #{alias}</if>
+            <if test="tagId != null "> and tag_id = #{tagId}</if>
+            <if test="operation != null "> and operation = #{operation}</if>
+            <if test="variableType != null "> and variable_type = #{variableType}</if>
+            <if test="sceneModelDataId != null "> and scene_model_data_id = #{sceneModelDataId}</if>
+        </where>
+        and del_flag = 0
+    </select>
+
+    <select id="selectSceneTagPointsById" parameterType="Long" resultMap="SceneTagPointsResult">
+        <include refid="selectSceneTagPointsVo"/>
+        where id = #{id}
+        and del_flag = 0
+    </select>
+
+    <select id="selectListByTagId" resultType="com.fastbee.iot.domain.SceneTagPoints">
+        <include refid="selectSceneTagPointsVo"/>
+        where tag_id = #{tagId}
+        and del_flag = 0
+    </select>
+
+    <insert id="insertSceneTagPoints" parameterType="SceneTagPoints" useGeneratedKeys="true" keyProperty="id">
+        insert into scene_tag_points
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="alias != null and alias != ''">alias,</if>
+            <if test="tagId != null">tag_id,</if>
+            <if test="operation != null">operation,</if>
+            <if test="variableType != null">variable_type,</if>
+            <if test="sceneModelDataId != null">scene_model_data_id,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="alias != null and alias != ''">#{alias},</if>
+            <if test="tagId != null">#{tagId},</if>
+            <if test="operation != null">#{operation},</if>
+            <if test="variableType != null">#{variableType},</if>
+            <if test="sceneModelDataId != null">#{sceneModelDataId},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSceneTagPoints" parameterType="SceneTagPoints">
+        update scene_tag_points
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="alias != null and alias != ''">alias = #{alias},</if>
+            <if test="tagId != null">tag_id = #{tagId},</if>
+            <if test="operation != null">operation = #{operation},</if>
+            <if test="variableType != null">variable_type = #{variableType},</if>
+            <if test="sceneModelDataId != null">scene_model_data_id = #{sceneModelDataId},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSceneTagPointsById" parameterType="Long">
+        delete from scene_tag_points where id = #{id}
+    </delete>
+
+    <update id="deleteByTagIds">
+        update scene_tag_points
+        set del_flag = 1
+        where tag_id in
+        <foreach item="tagId" collection="array" open="(" separator="," close=")">
+            #{tagId}
+        </foreach>
+    </update>
+
+    <update id="deleteSceneTagPointsByIds" parameterType="String">
+        update scene_tag_points
+        set del_flag = 1
+        where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="deleteBySceneModelIds">
+        update scene_tag_points
+        set del_flag = 1
+        where tag_id in (select id from scene_model_tag where scene_model_id in
+                <foreach collection="array" item="sceneModelId" open="(" separator="," close=")">
+                    #{sceneModelId}
+                </foreach>
+            )
+    </update>
+</mapper>

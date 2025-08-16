@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fastbee.iot.mapper.ModbusConfigMapper">
+    <resultMap type="com.fastbee.iot.domain.ModbusConfig" id="ModbusConfigResult">
+        <result property="id" column="id"/>
+        <result property="identifier" column="identifier"/>
+        <result property="address" column="address"/>
+        <result property="isReadonly" column="is_readonly"/>
+        <result property="dataType" column="data_type"/>
+        <result property="quantity" column="quantity"/>
+        <result property="type" column="type"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="productId" column="product_id"/>
+        <result property="slave" column="slave"/>
+        <result property="sort" column="sort"/>
+        <result property="bitOrder" column="bit_order"/>
+    </resultMap>
+
+    <resultMap type="com.fastbee.iot.domain.ModbusConfig" id="ModbusConfigShortResult">
+        <result property="id" column="id"/>
+        <result property="identifier" column="identifier"/>
+        <result property="address" column="address"/>
+        <result property="isReadonly" column="is_readonly"/>
+        <result property="dataType" column="data_type"/>
+        <result property="quantity" column="quantity"/>
+        <result property="type" column="type"/>
+        <result property="bitOrder" column="bit_order"/>
+        <result property="productId" column="product_id"/>
+        <result property="slave" column="slave"/>
+    </resultMap>
+
+    <sql id="selectModbusConfigVo">
+        select id,
+               product_id,
+               slave,
+               identifier,
+               address,
+               is_readonly,
+               data_type,
+               quantity,
+               type,
+               bit_order,
+               sort,
+               del_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark
+        from iot_modbus_config
+    </sql>
+
+    <sql id="selectModbusConfigShortVo">
+        select id,
+               product_id,
+               slave,
+               identifier,
+               address,
+               bit_order,
+               is_readonly,
+               data_type,
+               quantity,
+               type
+        from iot_modbus_config
+    </sql>
+
+    <select id="selectModbusConfigList" parameterType="com.fastbee.iot.domain.ModbusConfig"
+            resultMap="ModbusConfigResult">
+        <include refid="selectModbusConfigVo"/>
+        <where>
+            <if test="identifier != null  and identifier != ''">
+                and identifier = #{identifier}
+            </if>
+            <if test="address != null ">
+                and address = #{address}
+            </if>
+            <if test="isReadonly != null ">
+                and is_readonly = #{isReadonly}
+            </if>
+            <if test="dataType != null  and dataType != ''">
+                and data_type = #{dataType}
+            </if>
+            <if test="quantity != null ">
+                and quantity = #{quantity}
+            </if>
+            <if test="type != null ">
+                and type = #{type}
+            </if>
+            <if test="productId != null ">
+                and product_id = #{productId}
+            </if>
+        </where>
+        order by id
+    </select>
+
+    <select id="selectModbusConfigById" parameterType="Long" resultMap="ModbusConfigResult">
+        <include refid="selectModbusConfigVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertModbusConfig" parameterType="com.fastbee.iot.domain.ModbusConfig">
+        insert into iot_modbus_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="productId != null">
+                product_id,
+            </if>
+            <if test="slave != null">
+                slave,
+            </if>
+            <if test="identifier != null and identifier != ''">
+                identifier,
+            </if>
+            <if test="address != null">
+                address,
+            </if>
+            <if test="isReadonly != null">
+                is_readonly,
+            </if>
+            <if test="dataType != null and dataType != ''">
+                data_type,
+            </if>
+            <if test="quantity != null">
+                quantity,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="delFlag != null">
+                del_flag,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateBy != null">
+                update_by,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="sort != null">
+                sort,
+            </if>
+            <if test="bitOrder != null">
+                bit_order,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id},
+            </if>
+            <if test="productId != null">
+                #{productId},
+            </if>
+            <if test="slave != null">
+                #{slave},
+            </if>
+            <if test="identifier != null and identifier != ''">
+                #{identifier},
+            </if>
+            <if test="address != null">
+                #{address},
+            </if>
+            <if test="isReadonly != null">
+                #{isReadonly},
+            </if>
+            <if test="dataType != null and dataType != ''">
+                #{dataType},
+            </if>
+            <if test="quantity != null">
+                #{quantity},
+            </if>
+            <if test="type != null">
+                #{type},
+            </if>
+            <if test="delFlag != null">
+                #{delFlag},
+            </if>
+            <if test="createBy != null">
+                #{createBy},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateBy != null">
+                #{updateBy},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+            <if test="remark != null">
+                #{remark},
+            </if>
+            <if test="sort != null">
+                #{sort},
+            </if>
+            <if test="bitOrder != null">
+                #{bitOrder},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateModbusConfig" parameterType="com.fastbee.iot.domain.ModbusConfig">
+        update iot_modbus_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productId != null">
+                product_id = #{productId},
+            </if>
+            <if test="slave != null">
+                slave = #{slave},
+            </if>
+            <if test="identifier != null and identifier != ''">
+                identifier = #{identifier},
+            </if>
+            <if test="address != null">
+                address = #{address},
+            </if>
+            <if test="isReadonly != null">
+                is_readonly = #{isReadonly},
+            </if>
+            <if test="dataType != null and dataType != ''">
+                data_type = #{dataType},
+            </if>
+            <if test="quantity != null">
+                quantity = #{quantity},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="delFlag != null">
+                del_flag = #{delFlag},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+            <if test="sort != null">
+                sort = #{sort},
+            </if>
+            <if test="bitOrder != null">
+                bit_order = #{bitOrder},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteModbusConfigById" parameterType="Long">
+        delete
+        from iot_modbus_config
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteModbusConfigByIds" parameterType="String">
+        delete from iot_modbus_config where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <insert id="insertModbusConfigBatch" parameterType="com.fastbee.iot.domain.ModbusConfig" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into iot_modbus_config (product_id,identifier, address, is_readonly, data_type, quantity,
+        type,bit_order,sort, create_by, create_time)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.productId},
+            #{item.identifier},
+            #{item.address},
+            #{item.isReadonly},
+            #{item.dataType},
+            #{item.quantity},
+            #{item.type},
+            #{item.bitOrder},
+            #{item.sort},
+            #{item.createBy},
+            #{item.createTime})
+        </foreach>
+    </insert>
+
+    <update id="updateModbusConfigBatch" parameterType="com.fastbee.iot.domain.ModbusConfig">
+        update iot_modbus_config
+        set product_id = #{productId},
+        identifier = #{identifier},
+        address = #{address},
+        is_readonly = #{isReadonly},
+        data_type = #{dataType},
+        sort = #{sort},
+        type = #{type},
+        bit_order = #{bitOrder},
+        update_by = #{updateBy},
+        update_time = #{updateTime}
+        where id in
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </update>
+
+    <delete id="deleteByProductId" parameterType="Long">
+        delete
+        from iot_modbus_config
+        where product_id = #{productId}
+    </delete>
+
+    <select id="selectByIdentify" resultMap="ModbusConfigResult">
+        <include refid="selectModbusConfigVo"/>
+        where product_id = #{productId} and identifier = #{identity}
+    </select>
+
+    <select id="selectShortListByProductId" parameterType="com.fastbee.iot.domain.ModbusConfig"
+            resultMap="ModbusConfigShortResult">
+        <include refid="selectModbusConfigShortVo"/>
+        <where>
+            <if test="productId != null">
+                and product_id = #{productId}
+            </if>
+            <if test="address != null">
+                and address = #{address}
+            </if>
+        </where>
+    </select>
+</mapper>

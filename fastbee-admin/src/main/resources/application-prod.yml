@@ -1,0 +1,91 @@
+# 数据源配置
+spring:
+  datasource:
+    dynamic:
+      primary: master
+      strict: false
+      datasource:
+        master:
+          type: com.alibaba.druid.pool.DruidDataSource
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://localhost:3306/fastbee?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+          username: root
+          password: Land123!@#
+          filters: stat,wall
+          filter:
+            stat:
+              enabled: true
+              # 慢SQL记录
+              log-slow-sql: true
+              slow-sql-millis: 1000
+              merge-sql: true
+            wall:
+              config:
+                multi-statement-allow: true
+#        slave:
+#          type: com.alibaba.druid.pool.DruidDataSource
+#          driver-class-name: com.mysql.cj.jdbc.Driver
+#          url: jdbc:mysql://localhost:3306/fastbee1?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+#          username: root
+#          password: fastbee
+        sharding:
+          url: jdbc:shardingsphere:classpath:sharding-sphere-config.yaml
+          driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
+    taos: # 配置 taos 数据源
+      enabled: false
+      type: com.alibaba.druid.pool.DruidDataSource
+      driver-class-name: com.taosdata.jdbc.TSDBDriver
+      url: jdbc:TAOS://fastbee:6030/fastbee_log?timezone=UTC-8&charset=utf-8
+      username: root
+      password: taosdata
+      dbName: fastbee_log
+  # redis 配置
+  redis:
+    host: localhost                         # 地址
+    port: 6379                              # 端口，默认为6379
+    database: 0                             # 数据库索引
+    #password: fastbee                       # 密码
+    timeout: 10s                            # 连接超时时间
+    lettuce:
+      pool:
+        min-idle: 0                         # 连接池中的最小空闲连接
+        max-idle: 8                         # 连接池中的最大空闲连接
+        max-active: 8                       # 连接池的最大数据库连接数
+        max-wait: -1ms                      # 连接池最大阻塞等待时间（使用负值表示没有限制）
+  # mqtt 配置
+  mqtt:
+    username: fastbee                       # 账号（仅用于后端自认证）
+    password: fastbee                       # 密码（仅用于后端自认证）
+    host-url: tcp://localhost:1883         # 连接 Emqx 消息服务器地址
+    # host-url: tcp://177.7.0.13:1883       # 内置netty mqtt broker地址
+    client-id: ${random.int}                # 客户端Id，不能相同，采用随机数 ${random.value}
+    default-topic: test                     # 默认主题
+    timeout: 30                             # 超时时间
+    keepalive: 30                           # 保持连接
+    clearSession: true                      # 清除会话(设置为false,断开连接，重连后使用原来的会话 保留订阅的主题，能接收离线期间的消息)
+
+# sip 配置
+sip:
+  enabled: false                             # 是否启用视频监控SIP，true为启用
+  ## 本地调试时，绑定网卡局域网IP，设备在同一局域网，设备接入IP填写绑定IP
+  ## 部署服务端时，默认绑定容器IP，设备接入IP填写服务器公网IP
+  ip: localhost
+  port: 5061                                # SIP端口(保持默认)
+  domain: 3402000000                        # 由省级、市级、区级、基层编号组成
+  id: 34020000002000000001                  # 同上，另外增加编号，(可保持默认)
+  password: 12345678                        # 监控设备接入的密码
+  log: false
+  zlmRecordPath: /opt/media/bin/www
+
+# 日志配置
+logging:
+  level:
+    com.fastbee: debug
+    com.yomahub: warn
+    org.dromara: warn
+    org.springframework: warn
+
+# Swagger配置
+swagger:
+  enabled: true                             # 是否开启swagger
+  pathMapping: /prod-api                    # 请求前缀

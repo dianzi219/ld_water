@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fastbee.oss.mapper.OssConfigMapper">
+    
+    <resultMap type="com.fastbee.oss.domain.OssConfig" id="OssConfigResult">
+        <result property="id"    column="id"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="tenantName"    column="tenant_name"    />
+        <result property="configKey"    column="config_key"    />
+        <result property="accessKey"    column="access_key"    />
+        <result property="secretKey"    column="secret_key"    />
+        <result property="bucketName"    column="bucket_name"    />
+        <result property="prefix"    column="prefix"    />
+        <result property="endpoint"    column="endpoint"    />
+        <result property="domain"    column="domain"    />
+        <result property="isHttps"    column="is_https"    />
+        <result property="region"    column="region"    />
+        <result property="accessPolicy"    column="access_policy"    />
+        <result property="status"    column="status"    />
+        <result property="ext1"    column="ext1"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectOssConfigVo">
+        select id, tenant_id, tenant_name, config_key, access_key, secret_key, bucket_name, prefix, endpoint, domain, is_https, region, access_policy, status, ext1, del_flag, create_by, create_time, update_by, update_time, remark from oss_config
+    </sql>
+
+    <select id="selectOssConfigList" parameterType="com.fastbee.oss.domain.OssConfig" resultMap="OssConfigResult">
+        <include refid="selectOssConfigVo"/>
+        <where>  
+            <if test="tenantId != null "> and tenant_id = #{tenantId}</if>
+            <if test="tenantName != null  and tenantName != ''"> and tenant_name like concat('%', #{tenantName}, '%')</if>
+            <if test="configKey != null  and configKey != ''"> and config_key = #{configKey}</if>
+            <if test="accessKey != null  and accessKey != ''"> and access_key = #{accessKey}</if>
+            <if test="secretKey != null  and secretKey != ''"> and secret_key = #{secretKey}</if>
+            <if test="bucketName != null  and bucketName != ''"> and bucket_name like concat('%', #{bucketName}, '%')</if>
+            <if test="prefix != null  and prefix != ''"> and prefix = #{prefix}</if>
+            <if test="endpoint != null  and endpoint != ''"> and endpoint = #{endpoint}</if>
+            <if test="domain != null  and domain != ''"> and domain = #{domain}</if>
+            <if test="isHttps != null  and isHttps != ''"> and is_https = #{isHttps}</if>
+            <if test="region != null  and region != ''"> and region = #{region}</if>
+            <if test="accessPolicy != null  and accessPolicy != ''"> and access_policy = #{accessPolicy}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="ext1 != null  and ext1 != ''"> and ext1 = #{ext1}</if>
+        </where>
+    </select>
+    
+    <select id="selectOssConfigById" parameterType="Integer" resultMap="OssConfigResult">
+        <include refid="selectOssConfigVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertOssConfig" parameterType="com.fastbee.oss.domain.OssConfig" useGeneratedKeys="true" keyProperty="id">
+        insert into oss_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="tenantName != null and tenantName != ''">tenant_name,</if>
+            <if test="configKey != null and configKey != ''">config_key,</if>
+            <if test="accessKey != null and accessKey != ''">access_key,</if>
+            <if test="secretKey != null and secretKey != ''">secret_key,</if>
+            <if test="bucketName != null and bucketName != ''">bucket_name,</if>
+            <if test="prefix != null and prefix != ''">prefix,</if>
+            <if test="endpoint != null and endpoint != ''">endpoint,</if>
+            <if test="domain != null and domain != ''">domain,</if>
+            <if test="isHttps != null and isHttps != ''">is_https,</if>
+            <if test="region != null and region != ''">region,</if>
+            <if test="accessPolicy != null and accessPolicy != ''">access_policy,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="ext1 != null and ext1 != ''">ext1,</if>
+            <if test="delFlag != null and delFlag != ''">del_flag,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="tenantName != null and tenantName != ''">#{tenantName},</if>
+            <if test="configKey != null and configKey != ''">#{configKey},</if>
+            <if test="accessKey != null and accessKey != ''">#{accessKey},</if>
+            <if test="secretKey != null and secretKey != ''">#{secretKey},</if>
+            <if test="bucketName != null and bucketName != ''">#{bucketName},</if>
+            <if test="prefix != null and prefix != ''">#{prefix},</if>
+            <if test="endpoint != null and endpoint != ''">#{endpoint},</if>
+            <if test="domain != null and domain != ''">#{domain},</if>
+            <if test="isHttps != null and isHttps != ''">#{isHttps},</if>
+            <if test="region != null and region != ''">#{region},</if>
+            <if test="accessPolicy != null and accessPolicy != ''">#{accessPolicy},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="ext1 != null and ext1 != ''">#{ext1},</if>
+            <if test="delFlag != null and delFlag != ''">#{delFlag},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOssConfig" parameterType="com.fastbee.oss.domain.OssConfig">
+        update oss_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="tenantName != null and tenantName != ''">tenant_name = #{tenantName},</if>
+            <if test="configKey != null and configKey != ''">config_key = #{configKey},</if>
+            <if test="accessKey != null and accessKey != ''">access_key = #{accessKey},</if>
+            <if test="secretKey != null and secretKey != ''">secret_key = #{secretKey},</if>
+            <if test="bucketName != null and bucketName != ''">bucket_name = #{bucketName},</if>
+            <if test="prefix != null and prefix != ''">prefix = #{prefix},</if>
+            <if test="endpoint != null and endpoint != ''">endpoint = #{endpoint},</if>
+            <if test="domain != null and domain != ''">domain = #{domain},</if>
+            <if test="isHttps != null and isHttps != ''">is_https = #{isHttps},</if>
+            <if test="region != null and region != ''">region = #{region},</if>
+            <if test="accessPolicy != null and accessPolicy != ''">access_policy = #{accessPolicy},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="ext1 != null and ext1 != ''">ext1 = #{ext1},</if>
+            <if test="delFlag != null and delFlag != ''">del_flag = #{delFlag},</if>
+            <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOssConfigById" parameterType="Integer">
+        delete from oss_config where id = #{id}
+    </delete>
+
+    <delete id="deleteOssConfigByIds" parameterType="String">
+        delete from oss_config where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <update id="resetConfigStatus">
+        update oss_config set status = 1
+        where status = 0
+    </update>
+
+</mapper>

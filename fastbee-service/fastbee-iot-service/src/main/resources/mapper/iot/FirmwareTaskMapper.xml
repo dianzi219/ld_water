@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fastbee.iot.mapper.FirmwareTaskMapper">
+
+    <resultMap type="com.fastbee.iot.domain.FirmwareTask" id="FirmwareTaskResult">
+        <result property="id"    column="id"    />
+        <result property="taskName"    column="task_name"    />
+        <result property="firmwareId"    column="firmware_id"    />
+        <result property="upgradeType"    column="upgrade_type"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="taskDesc"    column="task_desc"    />
+        <result property="deviceAmount"    column="device_amount"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="bookTime"    column="book_time"    />
+    </resultMap>
+
+    <sql id="selectFirmwareTaskVo">
+        select id, task_name, firmware_id, upgrade_type, create_time, update_time, task_desc, device_amount, del_flag, book_time from iot_firmware_task
+    </sql>
+
+    <select id="selectCountFirmwareTaskByTaskName" resultType="int">
+        select count(t.task_name) from iot_firmware_task t
+        where t.task_name = #{taskName,jdbcType=VARCHAR}
+        and t.firmware_id = #{firmwareId}
+    </select>
+</mapper>

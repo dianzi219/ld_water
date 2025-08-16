@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fastbee.iot.mapper.SceneModelMapper">
+
+    <resultMap type="com.fastbee.iot.domain.SceneModel" id="SceneModelResult">
+        <result property="sceneModelId"    column="scene_model_id"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="sceneModelName"    column="scene_model_name"    />
+        <result property="status"    column="status"    />
+        <result property="guid"    column="guid"    />
+        <result property="desc"    column="desc"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="imgUrl" column="img_url"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="deviceTotal" column="device_total"/>
+    </resultMap>
+
+    <sql id="selectSceneModelVo">
+        select scene_model_id, tenant_id, scene_model_name, `status`, guid, `desc`, del_flag, create_by, create_time, update_by, update_time, remark, img_url from scene_model
+    </sql>
+
+    <select id="selectSceneModelList" parameterType="SceneModel" resultMap="SceneModelResult">
+        select sm.scene_model_id, sm.tenant_id, sm.scene_model_name, sm.`status`, sm.guid, sm.`desc`, sm.del_flag, sm.create_by, sm.create_time, sm.update_by, sm.update_time, sm.remark, sm.img_url,
+        d.dept_id, d.dept_name,
+        (select count(smd.cus_device_id) from scene_model_device smd where sm.scene_model_id = smd.scene_model_id and smd.variable_type = 1 and smd.del_flag = 0) as device_total
+        from scene_model sm left join sys_dept d on sm.tenant_id = d.dept_user_id
+        <where>
+            <if test="tenantId != null "> and sm.tenant_id = #{tenantId}</if>
+            <if test="sceneModelName != null  and sceneModelName != ''"> and sm.scene_model_name like concat('%', #{sceneModelName}, '%')</if>
+            <if test="status != null "> and sm.status = #{status}</if>
+            <if test="guid != null  and guid != ''"> and sm.guid = #{guid}</if>
+            <if test="desc != null  and desc != ''"> and sm.desc = #{desc}</if>
+        </where>
+        and sm.del_flag = 0
+        order by sm.scene_model_id desc
+    </select>
+
+    <select id="selectSceneModelBySceneModelId" parameterType="Long" resultMap="SceneModelResult">
+        select sm.scene_model_id, sm.tenant_id, sm.scene_model_name, sm.`status`, sm.guid, sm.`desc`, sm.del_flag, sm.create_by, sm.create_time, sm.update_by, sm.update_time, sm.remark, sm.img_url,
+               d.dept_id, d.dept_name
+        from scene_model sm left join sys_dept d on sm.tenant_id = d.dept_user_id
+        where sm.scene_model_id = #{sceneModelId}
+        and sm.del_flag = 0
+    </select>
+
+    <insert id="insertSceneModel" parameterType="com.fastbee.iot.domain.SceneModel" useGeneratedKeys="true" keyProperty="sceneModelId">
+        insert into scene_model
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="sceneModelName != null and sceneModelName != ''">scene_model_name,</if>
+            <if test="status != null">status,</if>
+            <if test="guid != null">guid,</if>
+            <if test="desc != null">`desc`,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="imgUrl != null">img_url,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="sceneModelName != null and sceneModelName != ''">#{sceneModelName},</if>
+            <if test="status != null">#{status},</if>
+            <if test="guid != null">#{guid},</if>
+            <if test="desc != null">#{desc},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="imgUrl != null">#{imgUrl},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSceneModel" parameterType="SceneModel">
+        update scene_model
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="sceneModelName != null and sceneModelName != ''">scene_model_name = #{sceneModelName},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="guid != null">guid = #{guid},</if>
+            <if test="desc != null">`desc` = #{desc},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="imgUrl != null">img_url = #{imgUrl},</if>
+        </trim>
+        where scene_model_id = #{sceneModelId}
+    </update>
+
+    <delete id="deleteSceneModelBySceneModelId" parameterType="Long">
+        delete from scene_model where scene_model_id = #{sceneModelId}
+    </delete>
+
+    <update id="deleteSceneModelBySceneModelIds" parameterType="String">
+        update scene_model
+        set del_flag = 1
+        where scene_model_id in
+        <foreach item="sceneModelId" collection="array" open="(" separator="," close=")">
+            #{sceneModelId}
+        </foreach>
+    </update>
+
+    <select id="selectSceneModelByChannelId" resultMap="SceneModelResult">
+        <include refid="selectSceneModelVo" />
+        where channel_id = #{channelId}
+    </select>
+
+    <select id="selectListScadaIdByGuidS" resultType="com.fastbee.iot.domain.SceneModel">
+        select id scadaId, guid
+        from scada
+        where guid in
+        <foreach collection="guidList" item="guid" open="(" separator="," close=")">
+            #{guid}
+        </foreach>
+    </select>
+
+    <select id="selectBySceneModelId" resultType="com.fastbee.iot.domain.SceneModel">
+        <include refid="selectSceneModelVo" />
+        where scene_model_id = #{sceneModelId}
+    </select>
+</mapper>

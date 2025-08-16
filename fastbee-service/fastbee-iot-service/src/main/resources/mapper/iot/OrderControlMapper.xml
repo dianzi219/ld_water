@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fastbee.iot.mapper.OrderControlMapper">
+
+    <resultMap type="com.fastbee.iot.domain.OrderControl" id="OrderControlResult">
+        <result property="id"    column="id"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="selectOrder"    column="select_order"    />
+        <result property="status"    column="status"    />
+        <result property="userId"    column="user_id"    />
+        <result property="deviceId"    column="device_id"    />
+        <result property="count"    column="count"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="imgUrl" column="img_url" />
+        <result property="filePath" column="file_path"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="deviceName" column="device_name" />
+        <result property="userName" column="user_name" />
+    </resultMap>
+
+    <sql id="selectOrderControlVo">
+        select id, tenant_id, select_order, status, user_id, device_id, count, create_by, create_time, update_by, update_time, remark,img_url,file_path,start_time,end_time from order_control
+    </sql>
+
+    <select id="selectOrderControlList" parameterType="com.fastbee.iot.domain.OrderControl" resultMap="OrderControlResult">
+        select c.id, c.tenant_id, c.select_order, c.status, c.user_id, c.device_id, c.count,
+        c.create_by, c.create_time, c.update_by,
+        c.update_time, c.remark,c.img_url,c.file_path,c.start_time,c.end_time,
+        d.device_name, u.user_name
+        from order_control c
+        left join iot_device d on c.device_id = d.device_id
+        left join sys_user u on c.user_id = u.user_id
+        <where>
+            <if test="tenantId != null "> and c.tenant_id = #{tenantId}</if>
+            <if test="selectOrder != null  and selectOrder != ''"> and c.select_order = #{selectOrder}</if>
+            <if test="status != null "> and c.status = #{status}</if>
+            <if test="userId != null "> and c.user_id = #{userId}</if>
+            <if test="deviceId != null "> and c.device_id = #{deviceId}</if>
+            <if test="count != null "> and count = #{count}</if>
+        </where>
+    </select>
+
+    <select id="selectOrderControlById" parameterType="Long" resultMap="OrderControlResult">
+        <include refid="selectOrderControlVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertOrderControl" parameterType="com.fastbee.iot.domain.OrderControl" useGeneratedKeys="true" keyProperty="id">
+        insert into order_control
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="selectOrder != null">select_order,</if>
+            <if test="status != null">status,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="deviceId != null">device_id,</if>
+            <if test="count != null">count,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="imgUrl != null">img_url,</if>
+            <if test="filePath != null">file_path,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="endTime != null">end_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="selectOrder != null">#{selectOrder},</if>
+            <if test="status != null">#{status},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="deviceId != null">#{deviceId},</if>
+            <if test="count != null">#{count},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="imgUrl != null">#{imgUrl},</if>
+            <if test="filePath != null">#{filePath},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOrderControl" parameterType="com.fastbee.iot.domain.OrderControl">
+        update order_control
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="selectOrder != null">select_order = #{selectOrder},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="deviceId != null">device_id = #{deviceId},</if>
+            <if test="count != null">count = #{count},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="imgUrl != null">img_url = #{imgUrl},</if>
+            <if test="filePath != null">file_path = #{filePath},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime}</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOrderControlById" parameterType="Long">
+        delete from order_control where id = #{id}
+    </delete>
+
+    <delete id="deleteOrderControlByIds" parameterType="String">
+        delete from order_control where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectByUserId" resultMap="OrderControlResult">
+        <include refid="selectOrderControlVo" />
+        where user_id = #{userId} and device_id = #{deviceId}
+    </select>
+</mapper>

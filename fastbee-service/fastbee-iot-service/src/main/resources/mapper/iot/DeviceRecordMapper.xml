@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fastbee.iot.mapper.DeviceRecordMapper">
+
+    <resultMap type="DeviceRecord" id="DeviceRecordResult">
+        <result property="id"    column="id"    />
+        <result property="operateDeptId"    column="operate_dept_id"    />
+        <result property="targetDeptId"    column="target_dept_id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="deviceId"    column="device_id"    />
+        <result property="type"    column="type"    />
+        <result property="distributeType"    column="distribute_type"    />
+        <result property="total"    column="total"    />
+        <result property="successQuantity"    column="success_quantity"    />
+        <result property="failQuantity"    column="fail_quantity"    />
+        <result property="status"    column="status"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="tenantName"    column="tenant_name"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="serialNumber"    column="serial_number"    />
+        <result property="parentId"    column="parent_id"    />
+    </resultMap>
+
+    <sql id="selectDeviceRecordVo">
+        select id, operate_dept_id, target_dept_id, product_id, device_id, type, distribute_type, total, success_quantity, fail_quantity, status, tenant_id, tenant_name, create_by, create_time, update_by, update_time, del_flag, serial_number, parent_id from iot_device_record
+    </sql>
+
+    <select id="selectDeviceRecordList" parameterType="DeviceRecord" resultMap="DeviceRecordResult">
+        <include refid="selectDeviceRecordVo"/>
+        <where>
+            <if test="operateDeptId != null "> and operate_dept_id = #{operateDeptId}</if>
+            <if test="targetDeptId != null "> and target_dept_id = #{targetDeptId}</if>
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="deviceId != null "> and device_id = #{deviceId}</if>
+            <if test="type != null "> and type = #{type}</if>
+            <if test="distributeType != null "> and distribute_type = #{distributeType}</if>
+            <if test="total != null "> and total = #{total}</if>
+            <if test="successQuantity != null "> and success_quantity = #{successQuantity}</if>
+            <if test="failQuantity != null "> and fail_quantity = #{failQuantity}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="tenantId != null "> and tenant_id = #{tenantId}</if>
+            <if test="tenantName != null  and tenantName != ''"> and tenant_name like concat('%', #{tenantName}, '%')</if>
+            <if test="serialNumber != null  and serialNumber != ''"> and serial_number = #{serialNumber}</if>
+            <if test="parentId != null "> and parent_id = #{parentId}</if>
+            <if test="params.beginTime != null and params.beginTime != '' and params.endTime != null and params.endTime != ''">
+                and create_time between #{params.beginTime} and #{params.endTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectDeviceRecordById" parameterType="Long" resultMap="DeviceRecordResult">
+        <include refid="selectDeviceRecordVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertDeviceRecord" parameterType="DeviceRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into iot_device_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="operateDeptId != null">operate_dept_id,</if>
+            <if test="targetDeptId != null">target_dept_id,</if>
+            <if test="productId != null">product_id,</if>
+            <if test="deviceId != null">device_id,</if>
+            <if test="type != null">type,</if>
+            <if test="distributeType != null">distribute_type,</if>
+            <if test="total != null">total,</if>
+            <if test="successQuantity != null">success_quantity,</if>
+            <if test="failQuantity != null">fail_quantity,</if>
+            <if test="status != null">status,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="tenantName != null">tenant_name,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="serialNumber != null">serial_number,</if>
+            <if test="parentId != null">parent_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="operateDeptId != null">#{operateDeptId},</if>
+            <if test="targetDeptId != null">#{targetDeptId},</if>
+            <if test="productId != null">#{productId},</if>
+            <if test="deviceId != null">#{deviceId},</if>
+            <if test="type != null">#{type},</if>
+            <if test="distributeType != null">#{distributeType},</if>
+            <if test="total != null">#{total},</if>
+            <if test="successQuantity != null">#{successQuantity},</if>
+            <if test="failQuantity != null">#{failQuantity},</if>
+            <if test="status != null">#{status},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="tenantName != null">#{tenantName},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="serialNumber != null">#{serialNumber},</if>
+            <if test="parentId != null">#{parentId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDeviceRecord" parameterType="DeviceRecord">
+        update iot_device_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="operateDeptId != null">operate_dept_id = #{operateDeptId},</if>
+            <if test="targetDeptId != null">target_dept_id = #{targetDeptId},</if>
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="deviceId != null">device_id = #{deviceId},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="distributeType != null">distribute_type = #{distributeType},</if>
+            <if test="total != null">total = #{total},</if>
+            <if test="successQuantity != null">success_quantity = #{successQuantity},</if>
+            <if test="failQuantity != null">fail_quantity = #{failQuantity},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="tenantName != null">tenant_name = #{tenantName},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="serialNumber != null">serial_number = #{serialNumber},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDeviceRecordById" parameterType="Long">
+        delete from iot_device_record where id = #{id}
+    </delete>
+
+    <delete id="deleteDeviceRecordByIds" parameterType="String">
+        delete from iot_device_record where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fastbee.iot.mapper.SipRelationMapper">
+
+    <resultMap type="com.fastbee.iot.domain.SipRelation" id="SipRelationResult">
+        <result property="id"    column="id"    />
+        <result property="channelId"    column="channel_id"    />
+        <result property="reDeviceId"    column="re_device_id"    />
+        <result property="reSceneModelId"    column="re_scene_model_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="deviceId" column="device_id"/>
+        <result property="status" column="status"/>
+        <result property="deviceSipId" column="device_sip_id"/>
+        <result property="channelName" column="channel_name"/>
+        <result property="model" column="model"/>
+    </resultMap>
+
+    <sql id="selectSipRelationVo">
+        select id, channel_id, re_device_id, re_scene_model_id, create_by, create_time, update_by, update_time, remark from iot_sip_relation
+    </sql>
+
+    <select id="selectSipRelationList" parameterType="com.fastbee.iot.domain.SipRelation" resultMap="SipRelationResult">
+        select r.id, r.channel_id, r.re_device_id, r.re_scene_model_id, r.create_by, r.create_time, r.update_by,
+        r.update_time,sd.status,sd.device_sip_id,sd.channel_name,sd.model
+        from iot_sip_relation r left join sip_device_channel sd on r.channel_id = sd.channel_sip_id
+        <where>
+            <if test="channelId != null  and channelId != ''"> and r.channel_id = #{channelId}</if>
+            <if test="reDeviceId != null "> and r.re_device_id = #{reDeviceId}</if>
+            <if test="reSceneModelId != null "> and r.re_scene_model_id = #{reSceneModelId}</if>
+        </where>
+    </select>
+
+    <select id="selectSipRelationById" parameterType="Long" resultMap="SipRelationResult">
+        <include refid="selectSipRelationVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertSipRelation" parameterType="com.fastbee.iot.domain.SipRelation" useGeneratedKeys="true" keyProperty="id">
+        insert into iot_sip_relation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="channelId != null and channelId != ''">channel_id,</if>
+            <if test="reDeviceId != null">re_device_id,</if>
+            <if test="reSceneModelId != null">re_scene_model_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="channelId != null and channelId != ''">#{channelId},</if>
+            <if test="reDeviceId != null">#{reDeviceId},</if>
+            <if test="reSceneModelId != null">#{reSceneModelId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSipRelation" parameterType="com.fastbee.iot.domain.SipRelation">
+        update iot_sip_relation
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="channelId != null and channelId != ''">channel_id = #{channelId},</if>
+            <if test="reDeviceId != null">re_device_id = #{reDeviceId},</if>
+            <if test="reSceneModelId != null">re_scene_model_id = #{reSceneModelId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSipRelationById" parameterType="Long">
+        delete from iot_sip_relation where id = #{id}
+    </delete>
+
+    <delete id="deleteSipRelationByIds" parameterType="String">
+        delete from iot_sip_relation where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectByChannelId" resultMap="SipRelationResult">
+        <include refid="selectSipRelationVo"/>
+        where channel_id = #{channelId}
+    </select>
+
+    <update id="updateByChannelId"  parameterType="com.fastbee.iot.domain.SipRelation">
+        update iot_sip_relation
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="reDeviceId != null">re_device_id = #{reDeviceId},</if>
+            <if test="reSceneModelId != null">re_scene_model_id = #{reSceneModelId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where channel_id = #{channelId}
+    </update>
+</mapper>

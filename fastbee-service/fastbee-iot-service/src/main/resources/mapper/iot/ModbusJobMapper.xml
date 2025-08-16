@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fastbee.iot.mapper.ModbusJobMapper">
+
+    <resultMap type="com.fastbee.iot.domain.ModbusJob" id="ModbusJobResult">
+        <result property="taskId"    column="task_id"    />
+        <result property="jobName" column="job_name" />
+        <result property="subDeviceId"    column="sub_device_id"    />
+        <result property="subSerialNumber"    column="sub_serial_number"    />
+        <result property="command"    column="command"    />
+        <result property="jobId"    column="job_id"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="deviceType" column="device_type" />
+    </resultMap>
+
+    <sql id="selectModbusJobVo">
+        select task_id,job_name, sub_device_id, sub_serial_number, command,device_type, job_id, status, create_by, create_time, remark from iot_modbus_job
+    </sql>
+
+    <select id="selectModbusJobList" parameterType="com.fastbee.iot.domain.ModbusJob" resultMap="ModbusJobResult">
+        <include refid="selectModbusJobVo"/>
+        <where>
+            <if test="subDeviceId != null "> and sub_device_id = #{subDeviceId}</if>
+            <if test="subSerialNumber != null  and subSerialNumber != ''"> and sub_serial_number = #{subSerialNumber}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="jobId != null">and job_id = #{jobId}</if>
+            <if test="subDeviceList != null and subDeviceList != ''">
+                and sub_serial_number in
+                <foreach collection="subDeviceList" index="index" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="selectModbusJobByTaskId" parameterType="Long" resultMap="ModbusJobResult">
+        <include refid="selectModbusJobVo"/>
+        where task_id = #{taskId}
+    </select>
+
+    <insert id="insertModbusJob" parameterType="com.fastbee.iot.domain.ModbusJob" useGeneratedKeys="true" keyProperty="taskId">
+        insert into iot_modbus_job
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="jobName != null">job_name,</if>
+            <if test="subDeviceId != null">sub_device_id,</if>
+            <if test="subSerialNumber != null and subSerialNumber != ''">sub_serial_number,</if>
+            <if test="command != null and command != ''">command,</if>
+            <if test="jobId != null">job_id,</if>
+            <if test="status != null">status,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="deviceType != null">device_type,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="jobName != null">#{jobName},</if>
+            <if test="subDeviceId != null">#{subDeviceId},</if>
+            <if test="subSerialNumber != null and subSerialNumber != ''">#{subSerialNumber},</if>
+            <if test="command != null and command != ''">#{command},</if>
+            <if test="jobId != null">#{jobId},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="deviceType != null">#{deviceType},</if>
+         </trim>
+    </insert>
+
+    <update id="updateModbusJob" parameterType="com.fastbee.iot.domain.ModbusJob">
+        update iot_modbus_job
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="jobName != null">job_name = #{jobName},</if>
+            <if test="subDeviceId != null">sub_device_id = #{subDeviceId},</if>
+            <if test="subSerialNumber != null and subSerialNumber != ''">sub_serial_number = #{subSerialNumber},</if>
+            <if test="command != null and command != ''">command = #{command},</if>
+            <if test="jobId != null">job_id = #{jobId},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where task_id = #{taskId}
+    </update>
+
+    <delete id="deleteModbusJobByTaskId" parameterType="Long">
+        delete from iot_modbus_job where task_id = #{taskId}
+    </delete>
+
+    <delete id="deleteModbusJobByTaskIds" parameterType="String">
+        delete from iot_modbus_job where task_id in
+        <foreach item="taskId" collection="array" open="(" separator="," close=")">
+            #{taskId}
+        </foreach>
+    </delete>
+</mapper>

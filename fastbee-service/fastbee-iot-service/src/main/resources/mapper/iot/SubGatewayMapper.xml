@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fastbee.iot.mapper.SubGatewayMapper">
+
+    <resultMap type="com.fastbee.iot.domain.SubGateway" id="GatewayResult">
+        <result property="id"    column="id"    />
+        <result property="gwDeviceId" column="gw_device_id"/>
+        <result property="subDeviceId"    column="sub_device_id"    />
+        <result property="slaveId"    column="slave_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <resultMap id="GatewaySubDeviceResult" type="com.fastbee.iot.model.gateWay.GateSubDeviceVO">
+        <result property="deviceId"    column="device_id"    />
+        <result property="serialNumber"    column="serial_number"    />
+        <result property="deviceName"    column="device_name"    />
+    </resultMap>
+
+    <resultMap id="GatewaySubDeviceListResult" type="com.fastbee.iot.model.gateWay.SubDeviceListVO">
+        <result property="gwDeviceId" column="gw_device_id"/>
+        <result property="subDeviceId"    column="sub_device_id"    />
+        <result property="slaveId"    column="slave_id"    />
+        <result property="subDeviceName" column="device_name"/>
+        <result property="subDeviceNo" column="serial_number"/>
+        <result property="createTime"    column="create_time"    />
+        <result property="subProductId" column="sub_product_id"/>
+        <result property="id" column="id" />
+    </resultMap>
+
+    <resultMap id="SubDeviceListResult" type="com.fastbee.common.core.mq.SubDeviceBo">
+        <result property="gwDeviceId" column="gw_device_id"/>
+        <result property="subDeviceId"    column="sub_device_id"    />
+        <result property="slaveId"    column="slave_id"    />
+        <result property="subDeviceName" column="device_name"/>
+        <result property="subDeviceNo" column="serial_number"/>
+        <result property="subProductId" column="sub_product_id"/>
+    </resultMap>
+
+    <sql id="selectGatewayVo">
+        select id, gw_device_id,  sub_device_id, slave_id, create_by, create_time, update_by, update_time, remark from iot_sub_gateway
+    </sql>
+
+    <select id="selectGatewayList" parameterType="com.fastbee.iot.domain.SubGateway" resultMap="GatewaySubDeviceListResult">
+        select ga.id, ga.gw_device_id,  ga.sub_device_id, ga.slave_id, ga.create_time ,d.device_name, d.serial_number, d.product_id sub_product_id
+        from iot_sub_gateway ga inner join iot_device d on ga.sub_device_id = d.device_id
+        <where>
+            <if test="gwDeviceId != null and gwDeviceId != 0">
+                gw_device_id = #{gwDeviceId}
+            </if>
+            <if test="subDeviceId != null and subDeviceId != 0">
+                sub_device_id = #{subDeviceId}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectGatewayById" parameterType="Long" resultMap="GatewayResult">
+        <include refid="selectGatewayVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertGateway" parameterType="com.fastbee.iot.domain.SubGateway">
+        insert into iot_sub_gateway
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="gwDeviceId != null">gw_device_id,</if>
+            <if test="subDeviceId != null">sub_device_id,</if>
+            <if test="slaveId != null">slave_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="gwDeviceId != null">#{gwDeviceId},</if>
+            <if test="subDeviceId != null">#{subDeviceId},</if>
+            <if test="slaveId != null">#{slaveId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateGateway" parameterType="com.fastbee.iot.domain.SubGateway">
+        update iot_sub_gateway
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="gwDeviceId != null">gw_device_id = #{gwDeviceId},</if>
+            <if test="subDeviceId != null">sub_device_id = #{subDeviceId},</if>
+            <if test="slaveId != null">slave_id = #{slaveId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteGatewayById" parameterType="Long">
+        delete from iot_sub_gateway where id = #{id}
+    </delete>
+
+    <delete id="deleteGatewayByIds" parameterType="String">
+        delete from iot_sub_gateway where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteGatewayByGwDeviceId">
+        delete from iot_sub_gateway where gw_device_id = #{gwDeviceId}
+    </delete>
+
+    <select id="getIsSelectGateSubDevice" parameterType="com.fastbee.iot.model.gateWay.GateSubDeviceVO"
+            resultMap="GatewaySubDeviceResult">
+        select d.device_id,d.serial_number,d.device_name
+        from iot_device d inner join iot_product p on d.product_id = p.product_id
+        <where>
+
+            and NOT EXISTS (select 1 from iot_sub_gateway sg where d.device_id = sg.sub_device_id)
+            and p.device_type = 4
+            <if test="serialNumber != null and serialNumber != ''">
+               and d.serial_number = #{serialNumber}
+            </if>
+            <if test="deviceName != null and deviceName != ''">
+                and d.device_name = #{deviceName}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insertSubDeviceBatch" parameterType="com.fastbee.iot.domain.SubGateway" useGeneratedKeys="true">
+        insert into iot_sub_gateway(gw_device_id, sub_device_id, slave_id, create_by, create_time)
+        values
+            <foreach collection="deviceList" item="device" separator=",">
+                (#{device.gwDeviceId},
+                 #{device.subDeviceId},
+                 #{device.slaveId},
+                 #{device.createBy},
+                 sysdate()
+                )
+            </foreach>
+    </insert>
+
+    <update id="updateSubDeviceBatch">
+
+    </update>
+
+    <select id="getSubDeviceListByGw" parameterType="java.lang.String" resultMap="SubDeviceListResult">
+        SELECT
+            ga.id,
+            ga.gw_device_id,
+            ga.sub_device_id,
+            ga.slave_id,
+            sub.device_name,
+            sub.serial_number,
+            sub.product_id as sub_product_id
+        FROM
+            iot_sub_gateway ga
+                INNER JOIN iot_device d ON ga.gw_device_id = d.device_id
+                INNER JOIN iot_device sub on sub.device_id = ga.sub_device_id
+        where d.serial_number = #{gwSerialNumber};
+    </select>
+
+    <select id="selectSlaveIdBySubDeviceId" resultType="java.lang.Integer">
+        select slave_id
+        from iot_sub_gateway
+        where sub_device_id = #{subDeviceId}
+    </select>
+</mapper>

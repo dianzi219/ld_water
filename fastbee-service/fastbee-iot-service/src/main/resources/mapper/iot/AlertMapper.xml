@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fastbee.iot.mapper.AlertMapper">
+
+    <resultMap type="com.fastbee.iot.domain.Alert" id="AlertResult">
+        <result property="alertId"    column="alert_id"    />
+        <result property="alertName"    column="alert_name"    />
+        <result property="alertLevel"    column="alert_level"    />
+        <result property="status"    column="status"    />
+        <result property="notify"    column="notify"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="tenantName"    column="tenant_name"    />
+    </resultMap>
+
+    <resultMap type="com.fastbee.iot.domain.Scene" id="AlertSceneResult">
+        <result property="sceneId"    column="scene_id"    />
+        <result property="sceneName"    column="scene_name"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userName"    column="user_name"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="cond"    column="cond"    />
+        <result property="silentPeriod"    column="silent_period"    />
+        <result property="executeMode"    column="execute_mode"    />
+        <result property="executeDelay"    column="execute_delay"    />
+        <result property="hasAlert"    column="has_alert"    />
+        <result property="enable"    column="enable"    />
+        <result property="applicationName"    column="application_name"    />
+    </resultMap>
+
+    <resultMap type="com.fastbee.iot.domain.AlertNotifyTemplate" id="AlertNotifyTemplateResult">
+        <result property="alertId"    column="alert_id"    />
+        <result property="notifyTemplateId"    column="notify_template_id"    />
+    </resultMap>
+
+    <sql id="selectAlertVo">
+        select alert_id, alert_name, alert_level, status, notify, create_by, create_time, update_by, update_time, remark, tenant_id, tenant_name  from iot_alert
+    </sql>
+
+    <select id="selectScenesByAlertId" parameterType="Long" resultMap="AlertSceneResult">
+        select a.alert_id,a.scene_id,s.scene_name,s.cond, s.silent_period, s.execute_mode, s.execute_delay, s.has_alert,s.enable
+        from (select alert_id,scene_id from iot_alert_scene where alert_id = #{alertId}) a
+                 left join iot_scene s on a.scene_id = s.scene_id
+    </select>
+
+    <select id="selectAlertList" parameterType="Alert" resultMap="AlertResult">
+        <include refid="selectAlertVo"/>
+        <where>
+            <if test="alertName != null  and alertName != ''"> and alert_name like concat('%', #{alertName}, '%')</if>
+            <if test="alertLevel != null "> and alert_level = #{alertLevel}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="notify != null  and notify != ''"> and notify = #{notify}</if>
+            <if test="tenantId != null "> and tenant_id = #{tenantId}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectAlertByAlertId" parameterType="Long" resultMap="AlertResult">
+        <include refid="selectAlertVo"/>
+        where alert_id = #{alertId}
+    </select>
+
+    <select id="selectAlertNotifyTemplateList" parameterType="Long" resultType="com.fastbee.iot.domain.AlertNotifyTemplate">
+        select alert_id, notify_template_id
+        from iot_alert_notify_template
+        where alert_id = #{alertId}
+    </select>
+
+    <select id="selectNotifyTemplateListByAlertId" resultType="com.fastbee.notify.domain.NotifyTemplate">
+        select n.id, n.service_code,n.msg_params,n.status, n.name, n.channel_id, n.channel_type, n.provider,  n.create_by, n.create_time, n.update_by, n.update_time, n.del_flag, n.tenant_id, n.tenant_name, c.name channelName
+        from iot_alert_notify_template a left join notify_template n on a.notify_template_id = n.id
+             left join notify_channel c on n.channel_id = c.id
+        where a.alert_id = #{alertId}
+    </select>
+
+    <select id="selectAlertSceneListBySceneId" resultType="com.fastbee.iot.domain.AlertScene">
+        select alert_id, scene_id
+        from iot_alert_scene
+        where scene_id = #{sceneId}
+    </select>
+
+    <select id="listByAlertIds" resultType="com.fastbee.iot.model.AlertSceneSendVO">
+        select s.scene_id, s.alert_id, a.alert_name, a.alert_level
+        from iot_alert_scene s left join iot_alert a on s.alert_id = a.alert_id
+        where s.scene_id = #{sceneId}
+        and a.status = 1
+    </select>
+
+    <insert id="insertAlert" parameterType="com.fastbee.iot.domain.Alert" useGeneratedKeys="true" keyProperty="alertId">
+        insert into iot_alert
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="alertName != null and alertName != ''">alert_name,</if>
+            <if test="alertLevel != null">alert_level,</if>
+            <if test="status != null">status,</if>
+            <if test="notify != null">notify,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="tenantName != null and tenantName != ''">tenant_name,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="alertName != null and alertName != ''">#{alertName},</if>
+            <if test="alertLevel != null">#{alertLevel},</if>
+            <if test="status != null">#{status},</if>
+            <if test="notify != null">#{notify},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="tenantName != null and tenantName != ''">#{tenantName},</if>
+         </trim>
+    </insert>
+
+    <update id="updateAlert" parameterType="Alert">
+        update iot_alert
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="alertName != null and alertName != ''">alert_name = #{alertName},</if>
+            <if test="alertLevel != null">alert_level = #{alertLevel},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="notify != null">notify = #{notify},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where alert_id = #{alertId}
+    </update>
+
+    <update id="updateAlertStatus">
+        update iot_alert
+        set status = #{status}
+        where alert_id = #{alertId}
+    </update>
+
+    <delete id="deleteAlertByAlertId" parameterType="Long">
+        delete from iot_alert where alert_id = #{alertId}
+    </delete>
+
+    <delete id="deleteAlertByAlertIds" parameterType="String">
+        delete from iot_alert where alert_id in
+        <foreach item="alertId" collection="array" open="(" separator="," close=")">
+            #{alertId}
+        </foreach>
+    </delete>
+
+    <insert id="insertAlertSceneList" parameterType="java.util.List">
+        insert into iot_alert_scene (alert_id,scene_id)
+        VALUES
+        <foreach collection="list" item="alertScene" separator=",">
+            (#{alertScene.alertId},#{alertScene.sceneId})
+        </foreach>
+    </insert>
+
+    <delete id="deleteAlertSceneByAlertIds" parameterType="String">
+        delete from iot_alert_scene where alert_id in
+        <foreach item="alertId" collection="array" open="(" separator="," close=")">
+            #{alertId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteAlertSceneBySceneIds" parameterType="String">
+        delete from iot_alert_scene where scene_id in
+        <foreach item="sceneId" collection="array" open="(" separator="," close=")">
+            #{sceneId}
+        </foreach>
+    </delete>
+
+    <insert id="insertAlertNotifyTemplateList">
+        insert into iot_alert_notify_template (alert_id, notify_template_id)
+        VALUES
+        <foreach collection="list" item="alertNotifyTemplate" separator=",">
+            (#{alertNotifyTemplate.alertId},#{alertNotifyTemplate.notifyTemplateId})
+        </foreach>
+    </insert>
+
+    <delete id="deleteAlertNotifyTemplateByAlertIds">
+        delete from iot_alert_notify_template where alert_id in
+        <foreach item="alertId" collection="array" open="(" separator="," close=")">
+            #{alertId}
+        </foreach>
+    </delete>
+
+</mapper>

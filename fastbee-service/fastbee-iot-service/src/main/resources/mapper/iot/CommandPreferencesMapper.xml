@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fastbee.iot.mapper.CommandPreferencesMapper">
+
+    <resultMap type="com.fastbee.iot.domain.CommandPreferences" id="CommandPreferencesResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="command"    column="command"    />
+        <result property="serialNumber"    column="serial_number"    />
+    </resultMap>
+
+    <sql id="selectCommandPreferencesVo">
+        select id, name, command, serial_number from command_preferences
+    </sql>
+
+    <select id="selectCommandPreferencesList" parameterType="com.fastbee.iot.domain.CommandPreferences" resultMap="CommandPreferencesResult">
+        <include refid="selectCommandPreferencesVo"/>
+        <where>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="command != null  and command != ''"> and command = #{command}</if>
+            <if test="serialNumber != null  and serialNumber != ''"> and serial_number = #{serialNumber}</if>
+        </where>
+    </select>
+
+    <select id="selectCommandPreferencesById" parameterType="Long" resultMap="CommandPreferencesResult">
+        <include refid="selectCommandPreferencesVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertCommandPreferences" parameterType="com.fastbee.iot.domain.CommandPreferences">
+        insert into command_preferences
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="command != null and command != ''">command,</if>
+            <if test="serialNumber != null and serialNumber != ''">serial_number,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="command != null and command != ''">#{command},</if>
+            <if test="serialNumber != null and serialNumber != ''">#{serialNumber},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCommandPreferences" parameterType="com.fastbee.iot.domain.CommandPreferences">
+        update command_preferences
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="command != null and command != ''">command = #{command},</if>
+            <if test="serialNumber != null and serialNumber != ''">serial_number = #{serialNumber},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCommandPreferencesById" parameterType="Long">
+        delete from command_preferences where id = #{id}
+    </delete>
+
+    <delete id="deleteCommandPreferencesByIds" parameterType="String">
+        delete from command_preferences where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

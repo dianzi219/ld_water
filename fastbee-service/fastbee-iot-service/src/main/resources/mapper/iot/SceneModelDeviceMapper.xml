@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fastbee.iot.mapper.SceneModelDeviceMapper">
+
+    <resultMap type="SceneModelDevice" id="SceneModelDeviceResult">
+        <result property="id"    column="id"    />
+        <result property="sceneModelId"    column="scene_model_id"    />
+        <result property="cusDeviceId"    column="cus_device_id"    />
+        <result property="sort"    column="sort"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="variableType"    column="variable_type"    />
+        <result property="allEnable"    column="all_enable"    />
+        <result property="name"    column="name"    />
+        <result property="productId"    column="product_id"    />
+    </resultMap>
+
+    <sql id="selectSceneModelDeviceVo">
+        select id, scene_model_id, cus_device_id, sort, del_flag, create_by, create_time, update_by, update_time, remark, variable_type, all_enable, name from scene_model_device
+    </sql>
+
+    <select id="selectSceneModelDeviceList" parameterType="SceneModelDevice" resultMap="SceneModelDeviceResult">
+        select smd.id, smd.scene_model_id, smd.cus_device_id, smd.sort, smd.del_flag,
+               smd.create_by, smd.create_time, smd.update_by, smd.update_time, smd.remark, smd.variable_type, smd.all_enable, smd.name,
+               d.product_id, d.serial_number
+        from scene_model_device smd left join iot_device d on smd.cus_device_id = d.device_id
+        <where>
+            <if test="sceneModelId != null "> and smd.scene_model_id = #{sceneModelId}</if>
+            <if test="cusDeviceId != null "> and smd.cus_device_id = #{cusDeviceId}</if>
+            <if test="sort != null "> and smd.sort = #{sort}</if>
+            <if test="allEnable != null "> and smd.all_enable = #{allEnable}</if>
+            <if test="name != null  and name != ''"> and smd.name like concat('%', #{name}, '%')</if>
+            <if test="variableType != null "> and smd.variable_type = #{variableType}</if>
+        </where>
+        and smd.del_flag = 0
+        order by smd.sort asc, smd.cus_device_id desc, smd.id desc
+    </select>
+
+    <select id="selectSceneModelDeviceById" parameterType="Long" resultMap="SceneModelDeviceResult">
+        <include refid="selectSceneModelDeviceVo"/>
+        where id = #{id}
+        and del_flag = 0
+    </select>
+
+    <select id="selectOneModelDevice" resultType="com.fastbee.iot.domain.SceneModelDevice">
+        <include refid="selectSceneModelDeviceVo"/>
+        where del_flag = 0
+        and variable_type = 1
+        and isnull(cus_device_id)
+        and scene_model_id = #{sceneModelId}
+    </select>
+
+    <select id="selectOneNoDeviceBySceneModelId" resultType="com.fastbee.iot.domain.SceneModelDevice">
+        <include refid="selectSceneModelDeviceVo"/>
+        where scene_model_id = #{sceneModelId}
+        and variable_type = #{variableType}
+        and del_flag = 0
+    </select>
+
+    <select id="checkContainAliasFormule" resultType="java.lang.Integer">
+        select count(st.id)
+        from scene_model_device s join scene_model_data smd on s.id = smd.scene_model_device_id
+                                  join scene_tag_points st on smd.id = st.scene_model_data_id
+        where s.id = #{id}
+          and s.del_flag = 0
+          and smd.del_flag = 0
+          and st.del_flag = 0
+    </select>
+
+    <select id="listDeviceByProductId" resultType="com.fastbee.iot.domain.SceneModelDevice">
+        select sd.id, sd.`name`, sd.cus_device_id, sd.scene_model_id
+        from iot_device d join scene_model_device sd on d.device_id = sd.cus_device_id
+        where d.del_flag = 0
+          and sd.del_flag = 0
+          and d.product_id = #{productId}
+    </select>
+
+    <insert id="insertSceneModelDevice" parameterType="SceneModelDevice" useGeneratedKeys="true" keyProperty="id">
+        insert into scene_model_device
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sceneModelId != null">scene_model_id,</if>
+            <if test="cusDeviceId != null">cus_device_id,</if>
+            <if test="sort != null">sort,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="variableType != null">variable_type,</if>
+            <if test="allEnable != null">all_enable,</if>
+            <if test="name != null">name,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="sceneModelId != null">#{sceneModelId},</if>
+            <if test="cusDeviceId != null">#{cusDeviceId},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="variableType != null">#{variableType},</if>
+            <if test="allEnable != null">#{allEnable},</if>
+            <if test="name != null">#{name},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSceneModelDevice" parameterType="SceneModelDevice">
+        update scene_model_device
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="sceneModelId != null">scene_model_id = #{sceneModelId},</if>
+            <if test="cusDeviceId != null">cus_device_id = #{cusDeviceId},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="variableType != null">variable_type = #{variableType},</if>
+            <if test="allEnable != null">all_enable = #{allEnable},</if>
+            <if test="name != null">name = #{name},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSceneModelDeviceById" parameterType="Long">
+        delete from scene_model_device where id = #{id}
+    </delete>
+
+    <update id="deleteSceneModelDeviceByIds" parameterType="String">
+        update scene_model_device
+        set del_flag = 1
+        where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="deleteBySceneModelIds">
+        update scene_model_device
+        set del_flag = 1
+        where scene_model_id in
+        <foreach item="sceneModelId" collection="array" open="(" separator="," close=")">
+            #{sceneModelId}
+        </foreach>
+    </update>
+
+    <update id="updateAllEnable">
+        update scene_model_device
+        set all_enable = #{allEnable}
+        where scene_model_id = #{sceneModelId}
+        and variable_type = #{variableType}
+        <if test="id != null "> and id = #{id}</if>
+    </update>
+</mapper>

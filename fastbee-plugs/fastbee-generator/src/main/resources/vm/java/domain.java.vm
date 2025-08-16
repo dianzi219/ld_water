@@ -1,0 +1,75 @@
+package ${packageName}.domain;
+
+#foreach ($import in $importList)
+import ${import};
+#end
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.Setter;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+
+/**
+ * ${functionName}对象 ${tableName}
+ *
+ * @author ${author}
+ * @date ${datetime}
+ */
+
+@ApiModel(value = "${ClassName}", description = "${functionName} ${tableName}")
+@Data
+@TableName("${tableName}" )
+public class ${ClassName} implements Serializable{
+    private static final long serialVersionUID=1L;
+
+#foreach ($column in $columns)
+    /** $column.columnComment */
+    #if($foreach.index == 0)
+    @TableId(value = "${column.columnName}", type = IdType.AUTO)
+    #end
+    #set($parentheseIndex=$column.columnComment.indexOf("（"))
+    #if($parentheseIndex != -1)
+        #set($comment=$column.columnComment.substring(0, $parentheseIndex))
+    #else
+        #set($comment=$column.columnComment)
+    #end
+    #if($parentheseIndex != -1)
+    @ApiModelProperty("${comment}")
+    #elseif($column.javaType == 'Date')
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @ApiModelProperty("${comment}")
+    #else
+    @ApiModelProperty("${comment}")
+    #end
+    private $column.javaType $column.javaField;
+
+#end
+    @Setter
+    @TableField(exist = false)
+    @ApiModelProperty("请求参数")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private Map<String, Object> params;
+
+    public Map<String, Object> getParams(){
+        if (params == null){
+            params = new HashMap<>();
+        }
+        return params;
+    }
+
+#if($table.sub)
+/** $table.subTable.functionName信息 */
+private List<${subClassName}> ${subclassName}List;
+#end
+}

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fastbee.oauth.mapper.OauthCodeMapper">
+
+    <resultMap type="OauthCode" id="OauthCodeResult">
+        <result property="code"    column="code"    />
+        <result property="authentication"    column="authentication"    />
+        <result property="userId"    column="user_id"    />
+    </resultMap>
+
+    <sql id="selectOauthCodeVo">
+        select code, authentication, user_id from oauth_code
+    </sql>
+
+    <select id="selectOauthCodeList" parameterType="OauthCode" resultMap="OauthCodeResult">
+        <include refid="selectOauthCodeVo"/>
+        <where>
+            <if test="code != null  and code != ''"> and code = #{code}</if>
+            <if test="authentication != null  and authentication != ''"> and authentication = #{authentication}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+        </where>
+    </select>
+
+    <select id="selectOauthCodeByCode" parameterType="String" resultMap="OauthCodeResult">
+        <include refid="selectOauthCodeVo"/>
+        where code = #{code}
+    </select>
+
+    <insert id="insertOauthCode" parameterType="OauthCode">
+        insert into oauth_code
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="code != null">code,</if>
+            <if test="authentication != null">authentication,</if>
+            <if test="userId != null">user_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="code != null">#{code},</if>
+            <if test="authentication != null">#{authentication},</if>
+            <if test="userId != null">#{userId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOauthCode" parameterType="OauthCode">
+        update oauth_code
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="authentication != null">authentication = #{authentication},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+        </trim>
+        where code = #{code}
+    </update>
+
+    <delete id="deleteOauthCodeByCode" parameterType="String">
+        delete from oauth_code where code = #{code}
+    </delete>
+
+    <delete id="deleteOauthCodeByCodes" parameterType="String">
+        delete from oauth_code where code in
+        <foreach item="code" collection="array" open="(" separator="," close=")">
+            #{code}
+        </foreach>
+    </delete>
+</mapper>

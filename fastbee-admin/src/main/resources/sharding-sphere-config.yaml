@@ -1,0 +1,59 @@
+mode:
+  type: Standalone
+  repository:
+    type: JDBC
+props:
+  # 是否显示 ShardingSpher 的sql，用于Debug
+  sql-show: true
+datasource:
+  # 配置真实数据源
+  names: ds0,ds1
+  ds0: # 配置 mysql 数据源
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/fastbee?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+    username: root
+    password: Land123!@#
+    filters: stat,wall
+    filter:
+      stat:
+        enabled: true
+        # 慢SQL记录
+        log-slow-sql: true
+        slow-sql-millis: 1000
+        merge-sql: true
+      wall:
+        config:
+          multi-statement-allow: true
+  ds1: # 配置 mysql 数据源
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/information_schema?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+    username: root
+    password: Land123!@#
+
+rules: # 配置表规则
+  sharding:
+    # 表策略配置
+    tables:
+      # iot_device_log 是逻辑表
+      iot_device_log:
+        actualDataNodes: ds0.iot_device_log_$->{2024..2030}0$->{1..9},ds0.iot_device_log_$->{2024..2030}1$->{0..2}
+        tableStrategy:
+          # 使用标准分片策略
+          standard:
+            # 配置分片字段
+            shardingColumn: create_time
+            # 分片算法名称，不支持大写字母和下划线，否则启动就会报错
+            shardingAlgorithmName: time-sharding-algorithm
+    # 分片算法配置
+    shardingAlgorithms:
+      # 分片算法名称，不支持大写字母和下划线，否则启动就会报错
+      time-sharding-algorithm:
+        # 类型：自定义策略
+        type: CLASS_BASED
+        props:
+          # 分片策略
+          strategy: standard
+          # 分片算法类
+          algorithmClassName: com.fastbee.framework.config.sharding.TimeShardingAlgorithm

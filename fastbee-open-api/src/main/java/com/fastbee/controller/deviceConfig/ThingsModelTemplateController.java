@@ -1,0 +1,142 @@
+package com.fastbee.controller.deviceConfig;
+
+import java.util.List;
+import javax.servlet.http.HttpServletResponse;
+
+import com.fastbee.iot.domain.ThingsModelJsonTemplate;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import com.fastbee.common.annotation.Log;
+import com.fastbee.common.core.controller.BaseController;
+import com.fastbee.common.core.domain.AjaxResult;
+import com.fastbee.common.enums.BusinessType;
+import com.fastbee.iot.domain.ThingsModelTemplate;
+import com.fastbee.iot.service.IThingsModelTemplateService;
+import com.fastbee.common.utils.poi.ExcelUtil;
+import com.fastbee.common.core.page.TableDataInfo;
+import org.springframework.web.multipart.MultipartFile;
+
+import static com.fastbee.common.utils.SecurityUtils.getLoginUser;
+
+/**
+ * 通用物模型Controller
+ *
+ * @author kerwincui
+ * @date 2021-12-16
+ */
+@RestController
+@RequestMapping("/iot/template")
+@Api(tags = "通用物模型")
+public class ThingsModelTemplateController extends BaseController {
+    @Autowired
+    private IThingsModelTemplateService thingsModelTemplateService;
+
+    /**
+     * 查询通用物模型列表
+     */
+    @PreAuthorize("@ss.hasPermi('iot:template:list')")
+    @GetMapping("/list")
+    @ApiOperation("通用物模型分页列表")
+    public TableDataInfo list(ThingsModelTemplate thingsModelTemplate) {
+        startPage();
+        return getDataTable(thingsModelTemplateService.selectThingsModelTemplateList(thingsModelTemplate));
+    }
+
+    /**
+     * 导出通用物模型列表
+     */
+    @PreAuthorize("@ss.hasPermi('iot:template:export')")
+    @Log(title = "通用物模型", businessType = BusinessType.EXPORT)
+    @PostMapping("/export")
+    @ApiOperation("导出通用物模型")
+    public void export(HttpServletResponse response, ThingsModelTemplate thingsModelTemplate) {
+        List<ThingsModelTemplate> list = thingsModelTemplateService.selectThingsModelTemplateList(thingsModelTemplate);
+        ExcelUtil<ThingsModelTemplate> util = new ExcelUtil<ThingsModelTemplate>(ThingsModelTemplate.class);
+        util.exportExcel(response, list, "通用物模型数据");
+    }
+
+    /**
+     * 获取通用物模型详细信息
+     */
+    @PreAuthorize("@ss.hasPermi('iot:template:query')")
+    @GetMapping(value = "/{templateId}")
+    @ApiOperation("获取通用物模型详情")
+    public AjaxResult getInfo(@PathVariable("templateId") Long templateId) {
+        return AjaxResult.success(thingsModelTemplateService.selectThingsModelTemplateByTemplateId(templateId));
+    }
+
+    /**
+     * 新增通用物模型
+     */
+    @PreAuthorize("@ss.hasPermi('iot:template:add')")
+    @Log(title = "通用物模型", businessType = BusinessType.INSERT)
+    @PostMapping
+    @ApiOperation("添加通用物模型")
+    public AjaxResult add(@RequestBody ThingsModelTemplate thingsModelTemplate) {
+        return toAjax(thingsModelTemplateService.insertThingsModelTemplate(thingsModelTemplate));
+    }
+
+    /**
+     * 修改通用物模型
+     */
+    @PreAuthorize("@ss.hasPermi('iot:template:edit')")
+    @Log(title = "通用物模型", businessType = BusinessType.UPDATE)
+    @PutMapping
+    @ApiOperation("修改通用物模型")
+    public AjaxResult edit(@RequestBody ThingsModelTemplate thingsModelTemplate) {
+        return toAjax(thingsModelTemplateService.updateThingsModelTemplate(thingsModelTemplate));
+    }
+
+    /**
+     * 删除通用物模型
+     */
+    @PreAuthorize("@ss.hasPermi('iot:template:remove')")
+    @Log(title = "通用物模型", businessType = BusinessType.DELETE)
+    @DeleteMapping("/{templateIds}")
+    @ApiOperation("批量删除通用物模型")
+    public AjaxResult remove(@PathVariable Long[] templateIds) {
+        return toAjax(thingsModelTemplateService.deleteThingsModelTemplateByTemplateIds(templateIds));
+    }
+
+    @ApiOperation(value = "物模型导入模板")
+    @PostMapping("/temp")
+    public void temp(HttpServletResponse response) {
+        ExcelUtil<ThingsModelTemplate> excelUtil = new ExcelUtil<>(ThingsModelTemplate.class);
+        excelUtil.importTemplateExcel(response, "采集点");
+    }
+
+    @ApiOperation(value = "物模型导入模板")
+    @RequestMapping(value = "/temp-json",method = RequestMethod.POST)
+    public void tempJson(HttpServletResponse response) {
+        ExcelUtil<ThingsModelJsonTemplate> excelUtil = new ExcelUtil<>(ThingsModelJsonTemplate.class);
+        excelUtil.importTemplateExcel(response, "JSON采集点模板");
+    }
+
+
+    /**
+     * 导入采集点
+     */
+    @PreAuthorize("@ss.hasPermi('iot:template:add')")
+    @ApiOperation(value = "采集点导入")
+    @PostMapping(value = "/importData")
+    public AjaxResult importData(MultipartFile file, String tempSlaveId) throws Exception {
+        ExcelUtil<ThingsModelTemplate> excelUtil = new ExcelUtil<>(ThingsModelTemplate.class);
+        List<ThingsModelTemplate> list = excelUtil.importExcel(file.getInputStream());
+        String result = thingsModelTemplateService.importData(list, tempSlaveId);
+        return AjaxResult.success(result);
+    }
+
+    @ApiOperation("导出采集点")
+    @PreAuthorize("@ss.hasPermi('iot:template:query')")
+    @PostMapping("/exportJson")
+    public void exportJson(HttpServletResponse response, ThingsModelTemplate template)
+    {
+        List<ThingsModelTemplate> thingsModelTemplates = thingsModelTemplateService.selectThingsModelTemplateExport(template);
+        ExcelUtil<ThingsModelTemplate> util = new ExcelUtil<ThingsModelTemplate>(ThingsModelTemplate.class);
+        util.exportExcel(response, thingsModelTemplates, "采集点");
+    }
+
+}

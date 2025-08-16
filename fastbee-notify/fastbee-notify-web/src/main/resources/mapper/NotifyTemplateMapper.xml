@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fastbee.notify.mapper.NotifyTemplateMapper">
+
+    <resultMap type="com.fastbee.notify.domain.NotifyTemplate" id="NotifyTemplateResult">
+        <result property="id"    column="id"    />
+        <result property="serviceCode"    column="service_code"    />
+        <result property="msgParams" column="msg_params"/>
+        <result property="status" column="status"    />
+        <result property="name"    column="name"    />
+        <result property="channelId"    column="channel_id"    />
+        <result property="channelType"    column="channel_type"    />
+        <result property="provider"    column="provider"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="tenantName"    column="tenant_name"    />
+    </resultMap>
+
+    <sql id="selectNotifyTemplateVo">
+        select id, service_code,msg_params,status, name, channel_id, channel_type, provider,  create_by, create_time, update_by, update_time, del_flag, tenant_id, tenant_name from notify_template
+    </sql>
+
+    <select id="selectNotifyTemplateList" parameterType="NotifyTemplate" resultMap="NotifyTemplateResult">
+        <include refid="selectNotifyTemplateVo"/>
+        <where>
+            <if test="serviceCode != null  and serviceCode != ''"> and service_code = #{serviceCode}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="channelId != null "> and channel_id = #{channelId}</if>
+            <if test="channelType != null "> and channel_type = #{channelType}</if>
+            <if test="provider != null  and provider != ''"> and provider = #{provider}</if>
+            <if test="status != null"> and status = #{status}</if>
+            <if test="tenantId != null "> and tenant_id = #{tenantId}</if>
+        </where>
+        order by status desc, create_time desc
+    </select>
+
+    <select id="selectEnableNotifyTemplateCount" parameterType="NotifyTemplate" resultType="java.lang.Integer">
+        select count(*) from notify_template t
+        where t.service_code = #{serviceCode}
+              and t.status = #{status} and t.id != #{id}
+              and t.channel_type = #{channelType}
+              and t.tenant_id = #{tenantId}
+              <if test="provider != null and provider != ''">
+                  and t.provider = #{provider}
+              </if>
+    </select>
+
+    <select id="selectNotifyTemplateById" parameterType="Long" resultMap="NotifyTemplateResult">
+        <include refid="selectNotifyTemplateVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectOnlyEnable" parameterType="NotifyTemplate" resultType="com.fastbee.notify.domain.NotifyTemplate">
+        <include refid="selectNotifyTemplateVo"/>
+        where service_code = #{serviceCode}
+        and status = 1
+        and channel_type = #{channelType}
+        and tenant_id = #{tenantId}
+        <if test="provider != null and provider != ''">
+            and provider = #{provider}
+        </if>
+    </select>
+
+    <select id="selectNotifyTemplateByIds" resultType="com.fastbee.notify.domain.NotifyTemplate">
+        <include refid="selectNotifyTemplateVo"/>
+        where id in
+        <foreach item="id" collection="idList" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="selectNotifyTemplateByChannelId" resultType="com.fastbee.notify.domain.NotifyTemplate">
+        <include refid="selectNotifyTemplateVo"/>
+        where channel_id = #{channelId}
+    </select>
+
+    <insert id="insertNotifyTemplate" parameterType="NotifyTemplate" useGeneratedKeys="true" keyProperty="id">
+        insert into notify_template
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="serviceCode != null">service_code,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="channelId != null">channel_id,</if>
+            <if test="channelType != null">channel_type,</if>
+            <if test="provider != null and provider != ''">provider,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="msgParams != null">msg_params,</if>
+            <if test="status != null">status,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="tenantName != null and tenantName != ''">tenant_name,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="serviceCode != null">#{serviceCode},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="channelId != null">#{channelId},</if>
+            <if test="channelType != null">#{channelType},</if>
+            <if test="provider != null and provider != ''">#{provider},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="msgParams != null">#{msgParams},</if>
+            <if test="status != null">#{status},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="tenantName != null and tenantName != ''">#{tenantName},</if>
+        </trim>
+    </insert>
+
+    <update id="updateNotifyTemplate" parameterType="NotifyTemplate">
+        update notify_template
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="serviceCode != null">service_code = #{serviceCode},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="channelId != null">channel_id = #{channelId},</if>
+            <if test="channelType != null">channel_type = #{channelType},</if>
+            <if test="provider != null and provider != ''">provider = #{provider},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="msgParams != null">msg_params = #{msgParams},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="tenantName != null and tenantName != ''">tenant_name = #{tenantName},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="updateNotifyBatch" >
+        update notify_template
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="status != null">status = #{status},</if>
+        </trim>
+        where id in
+        <foreach collection="ids" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <delete id="deleteNotifyTemplateById" parameterType="Long">
+        delete from notify_template where id = #{id}
+    </delete>
+
+    <delete id="deleteNotifyTemplateByIds" parameterType="String">
+        delete from notify_template where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteNotifyTemplateByChannelIds">
+        delete from notify_template where channel_id in
+        <foreach item="channelId" collection="array" open="(" separator="," close=")">
+            #{channelId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteAlertNotifyTemplateByNotifyTemplateIds">
+        delete from iot_alert_notify_template where notify_template_id in
+        <foreach item="notifyTemplateId" collection="array" open="(" separator="," close=")">
+            #{notifyTemplateId}
+        </foreach>
+    </delete>
+</mapper>

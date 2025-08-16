@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fastbee.iot.mapper.FirmwareMapper">
+
+    <resultMap type="com.fastbee.iot.domain.Firmware" id="FirmwareResult">
+        <result property="firmwareId"    column="firmware_id"    />
+        <result property="firmwareName"    column="firmware_name"    />
+        <result property="productId"    column="product_id"    />
+        <result property="productName"    column="product_name"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="tenantName"    column="tenant_name"    />
+        <result property="isSys"    column="is_sys"    />
+        <result property="isLatest"    column="is_latest"    />
+        <result property="version"    column="version"    />
+        <result property="filePath"    column="file_path"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectFirmwareVo">
+        select firmware_id, firmware_name, product_id, product_name, tenant_id, tenant_name, is_sys,is_latest, version, file_path, create_time,  update_time, remark from iot_firmware
+    </sql>
+
+
+    <select id="selectLatestFirmware" parameterType="Long" resultMap="FirmwareResult">
+        select f.firmware_id, f.firmware_name, f.product_id, f.product_name, f.tenant_id, f.tenant_name, f.is_sys,f.is_latest, f.version,
+               f.file_path, f.create_time, f.remark
+        from iot_device d
+                 left join iot_firmware f on d.product_id = f.product_id
+        where d.device_id=#{deviceId} and f.is_latest=1
+        order by f.create_time desc
+        limit 1
+    </select>
+
+    <!--查询待升级固件版本列表-->
+    <select id="selectUpGradeVersionList" parameterType="com.fastbee.iot.domain.Firmware" resultMap="FirmwareResult">
+        <include refid="selectFirmwareVo"/>
+        <where>
+            del_flag = '0'
+            <if test="tenantId != null  and tenantId != ''"> and tenant_id = #{tenantId}</if>
+            <if test="productId != null"> and product_id = #{productId}</if>
+            <if test="version != null"> and version &lt; #{version}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+</mapper>

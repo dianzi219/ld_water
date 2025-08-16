@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fastbee.iot.mapper.DeviceAlertUserMapper">
+
+    <resultMap type="DeviceAlertUser" id="DeviceAlertUserResult">
+        <result property="deviceId"    column="device_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userName" column="user_name"/>
+        <result property="phoneNumber" column="phonenumber"/>
+    </resultMap>
+
+    <sql id="selectDeviceAlertUserVo">
+        select device_id, user_id from iot_device_alert_user
+    </sql>
+
+    <select id="selectDeviceAlertUserList" parameterType="DeviceAlertUser" resultMap="DeviceAlertUserResult">
+        select du.device_id, du.user_id , u.user_name, u.phonenumber
+        from iot_device_alert_user du
+        left join sys_user u on du.user_id = u.user_id
+        where du.device_id = #{deviceId}
+    </select>
+
+    <select id="selectDeviceAlertUserByDeviceId" parameterType="Long" resultMap="DeviceAlertUserResult">
+        <include refid="selectDeviceAlertUserVo"/>
+        where device_id = #{deviceId}
+    </select>
+
+    <insert id="insertDeviceAlertUser" parameterType="DeviceAlertUser">
+        insert into iot_device_alert_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deviceId != null">device_id,</if>
+            <if test="userId != null">user_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deviceId != null">#{deviceId},</if>
+            <if test="userId != null">#{userId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDeviceAlertUser" parameterType="DeviceAlertUser">
+        update iot_device_alert_user
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+        </trim>
+        where device_id = #{deviceId}
+    </update>
+
+    <delete id="deleteDeviceAlertUserByDeviceId" parameterType="Long">
+        delete from iot_device_alert_user where device_id = #{deviceId}
+    </delete>
+
+    <delete id="deleteDeviceAlertUserByDeviceIds" parameterType="String">
+        delete from iot_device_alert_user where device_id in
+        <foreach item="deviceId" collection="array" open="(" separator="," close=")">
+            #{deviceId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteByDeviceIdAndUserId">
+        delete from iot_device_alert_user
+        where device_id = #{deviceId}
+        and user_id = #{userId}
+    </delete>
+</mapper>

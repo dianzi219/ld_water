@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fastbee.iot.mapper.SceneModelTagMapper">
+
+    <resultMap type="SceneModelTag" id="SceneModelTagResult">
+        <result property="id"    column="id"    />
+        <result property="sceneModelId"    column="scene_model_id"    />
+        <result property="name"    column="name"    />
+        <result property="unit"    column="unit"    />
+        <result property="dataType"    column="data_type"    />
+        <result property="defaultValue"    column="default_value"    />
+        <result property="isReadonly"    column="is_readonly"    />
+        <result property="storage"    column="storage"    />
+        <result property="variableType"    column="variable_type"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="cycleExecuted"    column="cycle_executed"    />
+        <result property="formule"    column="formule"    />
+        <result property="aliasFormule"    column="alias_formule"    />
+        <result property="cycleType"    column="cycle_type"    />
+        <result property="cycle"    column="cycle"    />
+    </resultMap>
+
+    <sql id="selectSceneModelTagVo">
+        select id, scene_model_id, name, unit, data_type, default_value, is_readonly, storage, variable_type, del_flag, create_by, create_time, update_by, update_time, remark, cycle_executed, formule, alias_formule, cycle_type, cycle from scene_model_tag
+    </sql>
+
+    <select id="selectSceneModelTagList" parameterType="SceneModelTag" resultMap="SceneModelTagResult">
+        <include refid="selectSceneModelTagVo"/>
+        <where>
+            <if test="sceneModelId != null "> and scene_model_id = #{sceneModelId}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="unit != null  and unit != ''"> and unit = #{unit}</if>
+            <if test="dataType != null  and dataType != ''"> and data_type = #{dataType}</if>
+            <if test="defaultValue != null  and defaultValue != ''"> and default_value = #{defaultValue}</if>
+            <if test="isReadonly != null "> and is_readonly = #{isReadonly}</if>
+            <if test="storage != null "> and storage = #{storage}</if>
+            <if test="variableType != null "> and variable_type = #{variableType}</if>
+            <if test="cycleExecuted != null "> and cycle_executed = #{cycleExecuted}</if>
+            <if test="formule != null  and formule != ''"> and formule = #{formule}</if>
+            <if test="aliasFormule != null  and aliasFormule != ''"> and alias_formule = #{aliasFormule}</if>
+            <if test="cycleType != null "> and cycle_type = #{cycleType}</if>
+            <if test="cycle != null  and cycle != ''"> and cycle = #{cycle}</if>
+        </where>
+        and del_flag = 0
+    </select>
+
+    <select id="selectSceneModelTagById" parameterType="Long" resultMap="SceneModelTagResult">
+        select smt.id, smt.scene_model_id, smt.name, smt.unit, smt.data_type, smt.default_value, smt.is_readonly, smt.storage, smt.variable_type, smt.del_flag,
+               smt.create_by, smt.create_time, smt.update_by, smt.update_time, smt.remark, smt.cycle_executed, smt.formule, smt.alias_formule, smt.cycle_type, smt.cycle,
+               smd.id scene_model_device_id, d.enable
+        from scene_model_tag smt left join scene_model_device smd on smt.scene_model_id = smd.scene_model_id and smt.variable_type = smd.variable_type
+        left join scene_model_data d on smt.scene_model_id = d.scene_model_id and smt.id = d.datasource_id
+        where smt.id = #{id}
+        and smt.del_flag = 0
+    </select>
+
+    <select id="listSceneModelDataByIds" resultType="com.fastbee.iot.domain.SceneModelTag">
+        select id, name, unit, data_type, default_value, is_readonly, storage
+        from scene_model_tag
+        where id in
+            <foreach collection="idList" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        and del_flag = 0
+    </select>
+
+    <select id="checkName" resultType="com.fastbee.iot.domain.SceneModelTag">
+        <include refid="selectSceneModelTagVo"/>
+        where name = #{name}
+        and variable_type = #{variableType}
+        and del_flag = 0
+        <if test="id != null">
+            and id != #{id}
+        </if>
+    </select>
+
+    <insert id="insertSceneModelTag" parameterType="SceneModelTag" useGeneratedKeys="true" keyProperty="id">
+        insert into scene_model_tag
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sceneModelId != null">scene_model_id,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="unit != null">unit,</if>
+            <if test="dataType != null and dataType != ''">data_type,</if>
+            <if test="defaultValue != null">default_value,</if>
+            <if test="isReadonly != null">is_readonly,</if>
+            <if test="storage != null">storage,</if>
+            <if test="variableType != null">variable_type,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="cycleExecuted != null">cycle_executed,</if>
+            <if test="formule != null">formule,</if>
+            <if test="aliasFormule != null">alias_formule,</if>
+            <if test="cycleType != null">cycle_type,</if>
+            <if test="cycle != null and cycle != ''">cycle,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="sceneModelId != null">#{sceneModelId},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="unit != null">#{unit},</if>
+            <if test="dataType != null and dataType != ''">#{dataType},</if>
+            <if test="defaultValue != null">#{defaultValue},</if>
+            <if test="isReadonly != null">#{isReadonly},</if>
+            <if test="storage != null">#{storage},</if>
+            <if test="variableType != null">#{variableType},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="cycleExecuted != null">#{cycleExecuted},</if>
+            <if test="formule != null">#{formule},</if>
+            <if test="aliasFormule != null">#{aliasFormule},</if>
+            <if test="cycleType != null">#{cycleType},</if>
+            <if test="cycle != null and cycle != ''">#{cycle},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSceneModelTag" parameterType="SceneModelTag">
+        update scene_model_tag
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="sceneModelId != null">scene_model_id = #{sceneModelId},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="unit != null">unit = #{unit},</if>
+            <if test="dataType != null and dataType != ''">data_type = #{dataType},</if>
+            <if test="defaultValue != null">default_value = #{defaultValue},</if>
+            <if test="isReadonly != null">is_readonly = #{isReadonly},</if>
+            <if test="storage != null">storage = #{storage},</if>
+            <if test="variableType != null">variable_type = #{variableType},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="cycleExecuted != null">cycle_executed = #{cycleExecuted},</if>
+            <if test="formule != null">formule = #{formule},</if>
+            <if test="aliasFormule != null">alias_formule = #{aliasFormule},</if>
+            <if test="cycleType != null">cycle_type = #{cycleType},</if>
+            <if test="cycle != null and cycle != ''">cycle = #{cycle},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSceneModelTagById" parameterType="Long">
+        delete from scene_model_tag where id = #{id}
+    </delete>
+
+    <update id="deleteSceneModelTagByIds" parameterType="String">
+        update scene_model_tag
+        set del_flag = 1
+        where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="deleteBySceneModelIds">
+        update scene_model_tag
+        set del_flag = 1
+        where scene_model_id in
+        <foreach item="sceneModelId" collection="array" open="(" separator="," close=")">
+            #{sceneModelId}
+        </foreach>
+    </update>
+</mapper>

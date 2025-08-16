@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fastbee.iot.mapper.AlertLogMapper">
+
+    <resultMap type="com.fastbee.iot.domain.AlertLog" id="AlertLogResult">
+        <result property="alertLogId"    column="alert_log_id"    />
+        <result property="alertName"    column="alert_name"    />
+        <result property="alertLevel"    column="alert_level"    />
+        <result property="status"    column="status"    />
+        <result property="deviceId"    column="device_id"    />
+        <result property="deviceName"    column="device_name"    />
+        <result property="productId"    column="product_id"    />
+        <result property="detail"    column="detail"    />
+        <result property="serialNumber"    column="serial_number"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="userId" column="user_id"/>
+        <result property="sceneId" column="scene_id"/>
+        <result property="sceneName" column="scene_name"/>
+    </resultMap>
+
+    <resultMap type="com.fastbee.iot.model.DeviceAlertCount" id="DeviceAlertCount">
+        <result property="serialNumber"    column="serial_number"    />
+        <result property="sceneId"    column="scene_id"    />
+        <result property="alertCount"    column="alert_count"    />
+        <result property="noprocessedCount"    column="noprocessed_count"    />
+        <result property="unprocessedCount"    column="unprocessed_count"    />
+        <result property="processedCount"    column="processed_count"    />
+    </resultMap>
+
+    <sql id="selectAlertLogVo">
+        select alert_log_id, alert_name, alert_level, status, product_id, detail, serial_number, create_by, create_time, remark, device_name, user_id from iot_alert_log
+    </sql>
+
+    <select id="selectAlertLogList" parameterType="com.fastbee.iot.domain.AlertLog" resultMap="AlertLogResult">
+        select distinct al.alert_log_id, al.alert_name, al.alert_level, al.status, al.product_id, al.detail, al.serial_number, al.create_time, al.remark, al.device_name, al.user_id
+        from iot_alert_log al
+        <where>
+            <if test="alertName != null  and alertName != ''"> and al.alert_name like concat('%', #{alertName}, '%')</if>
+            <if test="alertLevel != null "> and al.alert_level = #{alertLevel}</if>
+            <if test="status != null "> and al.status = #{status}</if>
+            <if test="productId != null "> and al.product_id = #{productId}</if>
+            <if test="serialNumber != null "> and al.serial_number = #{serialNumber}</if>
+            <if test="userId != null "> and al.user_id = #{userId}</if>
+            <if test="createBy != null "> and al.create_by = #{createBy}</if>
+            <if test="remark != null "> and al.remark = #{remark}</if>
+        </where>
+        order by al.create_time desc
+    </select>
+
+    <select id="selectAlertLogListAndScene" parameterType="com.fastbee.iot.domain.AlertLog" resultMap="AlertLogResult">
+        select al.alert_log_id, al.alert_name, al.alert_level, al.status, al.product_id, al.detail,
+                al.serial_number, al.create_time, al.remark, al.device_name, al.user_id,
+                s.scene_id,s.scene_name
+        from iot_alert_log al
+        left join iot_scene s on CAST(COALESCE(NULLIF(TRIM(al.create_by), ''), 0) AS signed) = s.scene_id
+        <where>
+            <if test="alertName != null  and alertName != ''"> and al.alert_name like concat('%', #{alertName}, '%')</if>
+            <if test="alertLevel != null "> and al.alert_level = #{alertLevel}</if>
+            <if test="status != null "> and al.status = #{status}</if>
+            <if test="productId != null "> and al.product_id = #{productId}</if>
+            <if test="serialNumber != null "> and al.serial_number = #{serialNumber}</if>
+            <if test="userId != null "> and al.user_id = #{userId}</if>
+            <if test="beginTime != null "><!-- 开始时间检索 -->
+                and al.create_time &gt;= #{beginTime}
+            </if>
+            <if test="endTime != null "><!-- 结束时间检索 -->
+                and al.create_time &lt;= #{endTime}
+            </if>
+        </where>
+        order by al.create_time desc
+    </select>
+
+    <select id="selectAlertLogListCount" parameterType="com.fastbee.iot.domain.AlertLog" resultType="Long">
+        select distinct count(l.alert_log_id)
+        from iot_alert_log l
+        left join iot_device d on l.serial_number=d.serial_number
+        left join iot_device_user u on d.device_id=u.device_id
+        <where>
+            <if test="alertName != null  and alertName != ''"> and l.alert_name like concat('%', #{alertName}, '%')</if>
+            <if test="alertLevel != null "> and l.alert_level = #{alertLevel}</if>
+            <if test="status != null "> and l.status = #{status}</if>
+            <if test="userId != null "> and u.user_id = #{userId}</if>
+            <if test="productId != null "> and l.product_id = #{productId}</if>
+            <if test="createBy != null  and createBy != ''"> and l.create_by = #{createBy}</if>
+            <if test="serialNumber != null  and serialNumber != ''"> and l.serial_number = #{serialNumber}</if>
+        </where>
+    </select>
+
+    <select id="selectDeviceAlertCount" resultMap="DeviceAlertCount">
+        SELECT
+            serial_number,
+            COUNT(alert_log_id) AS alert_count,
+            SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) AS noprocessed_count,
+            SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END) AS unprocessed_count,
+            SUM(CASE WHEN status = 3 THEN 1 ELSE 0 END) AS processed_count
+        FROM
+            iot_alert_log
+        GROUP BY
+            serial_number;
+    </select>
+
+    <select id="selectDeviceAlertCountBySN"  parameterType="String" resultMap="DeviceAlertCount">
+        SELECT
+            serial_number,
+            COUNT(alert_log_id) AS alert_count,
+            SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) AS noprocessed_count,
+            SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END) AS unprocessed_count,
+            SUM(CASE WHEN status = 3 THEN 1 ELSE 0 END) AS processed_count
+        FROM
+            iot_alert_log
+        where serial_number = #{serialNumber}
+    </select>
+
+    <select id="selectSceneAlertCount"  resultMap="DeviceAlertCount">
+        SELECT
+            create_by AS scene_id,
+            COUNT(alert_log_id) AS alert_count,
+            SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) AS noprocessed_count,
+            SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END) AS unprocessed_count,
+            SUM(CASE WHEN status = 3 THEN 1 ELSE 0 END) AS processed_count
+        FROM
+            iot_alert_log
+        GROUP BY
+            create_by;
+    </select>
+
+    <select id="selectSceneAlertCountBySceneId"  parameterType="String" resultMap="DeviceAlertCount">
+        SELECT
+            create_by AS scene_id,
+            COUNT(alert_log_id) AS alert_count,
+            SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) AS noprocessed_count,
+            SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END) AS unprocessed_count,
+            SUM(CASE WHEN status = 3 THEN 1 ELSE 0 END) AS processed_count
+        FROM
+            iot_alert_log
+        where create_by = #{sceneId}
+    </select>
+
+    <select id="selectAlertLogByAlertLogId" parameterType="Long" resultMap="AlertLogResult">
+        <include refid="selectAlertLogVo"/>
+        where alert_log_id = #{alertLogId}
+    </select>
+
+    <select id="countAlertProcess" resultType="com.fastbee.iot.model.AlertCountVO">
+        select count(1) count, status type
+        from iot_alert_log
+        where user_id = #{tenantId}
+        <if test="serialNumber != null and serialNumber != ''">
+            and serial_number = #{serialNumber}
+        </if>
+        <if test="beginTime != null and beginTime != ''
+            and endTime != null and endTime != ''">
+            and create_time between #{beginTime} and #{endTime}
+        </if>
+        group by status
+    </select>
+
+    <select id="countAlertLevel" resultType="com.fastbee.iot.model.AlertCountVO">
+        select count(1) count, alert_level type
+        from iot_alert_log
+        where user_id = #{tenantId}
+        <if test="serialNumber != null and serialNumber != ''">
+            and serial_number = #{serialNumber}
+        </if>
+        <if test="beginTime != null and beginTime != ''
+            and endTime != null and endTime != ''">
+            and create_time between #{beginTime} and #{endTime}
+        </if>
+        group by alert_level
+    </select>
+
+    <insert id="insertAlertLog" parameterType="com.fastbee.iot.domain.AlertLog" useGeneratedKeys="true" keyProperty="alertLogId">
+        insert into iot_alert_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="alertName != null and alertName != ''">alert_name,</if>
+            <if test="alertLevel != null">alert_level,</if>
+            <if test="status != null">status,</if>
+            <if test="productId != null">product_id,</if>
+            <if test="detail != null and detail != ''">detail,</if>
+            <if test="serialNumber != null and serialNumber != ''">serial_number,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="deviceName != null and deviceName != ''">device_name,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="alertName != null and alertName != ''">#{alertName},</if>
+            <if test="alertLevel != null">#{alertLevel},</if>
+            <if test="status != null">#{status},</if>
+            <if test="productId != null">#{productId},</if>
+            <if test="detail != null and detail != ''">#{detail},</if>
+            <if test="serialNumber != null and serialNumber != ''">#{serialNumber},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="deviceName != null and deviceName != ''">#{deviceName},</if>
+         </trim>
+    </insert>
+
+    <insert id="insertAlertLogBatch" parameterType="com.fastbee.iot.domain.AlertLog" useGeneratedKeys="true" keyProperty="alertLogId">
+        insert into iot_alert_log (alert_name,alert_level,status,product_id,detail,serial_number,create_time,create_by,device_name,user_id)
+        values
+        <foreach collection ="list" item="alertLog" separator =",">
+            (#{alertLog.alertName},
+            #{alertLog.alertLevel},
+            #{alertLog.status},
+            #{alertLog.productId},
+            #{alertLog.detail},
+            #{alertLog.serialNumber},
+            #{alertLog.createTime},
+            #{alertLog.createBy},
+            #{alertLog.deviceName},
+            #{alertLog.userId})
+        </foreach >
+    </insert>
+
+    <update id="updateAlertLog" parameterType="com.fastbee.iot.domain.AlertLog">
+        update iot_alert_log
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="alertName != null and alertName != ''">alert_name = #{alertName},</if>
+            <if test="alertLevel != null">alert_level = #{alertLevel},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="detail != null and detail != ''">detail = #{detail},</if>
+            <if test="serialNumber != null and serialNumber != ''">serial_number = #{serialNumber},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where alert_log_id = #{alertLogId}
+    </update>
+
+    <update id="updateAlertLogStatus" parameterType="com.fastbee.iot.domain.AlertLog">
+        update iot_alert_log
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="status != null">status = #{status},</if>
+        </trim>
+        <where>
+            <if test="serialNumber != null "> and serial_number = #{serialNumber}</if>
+            <if test="createBy != null "> and create_by = #{createBy}</if>
+        </where>
+    </update>
+
+    <delete id="deleteAlertLogByAlertLogId" parameterType="Long">
+        delete from iot_alert_log where alert_log_id = #{alertLogId}
+    </delete>
+
+    <delete id="deleteAlertLogBySerialNumber" parameterType="String">
+        delete from iot_alert_log where serial_number = #{serialNumber}
+    </delete>
+
+    <delete id="deleteAlertLogByAlertLogIds" parameterType="String">
+        delete from iot_alert_log where alert_log_id in
+        <foreach item="alertLogId" collection="array" open="(" separator="," close=")">
+            #{alertLogId}
+        </foreach>
+    </delete>
+
+</mapper>

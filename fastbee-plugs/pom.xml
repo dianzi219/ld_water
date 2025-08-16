@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>fastbee</artifactId>
+        <groupId>com.fastbee</groupId>
+        <version>3.8.5</version>
+    </parent>
+
+    <packaging>pom</packaging>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fastbee</groupId>
+            <artifactId>fastbee-common</artifactId>
+        </dependency>
+    </dependencies>
+
+    <artifactId>fastbee-plugs</artifactId>
+    <description>插件工具类整合</description>
+
+    <modules>
+        <module>fastbee-quartz</module>
+        <module>fastbee-generator</module>
+        <module>fastbee-oss</module>
+        <module>fastbee-http</module>
+        <module>fastbee-oauth</module>
+        <module>fastbee-mqtt-client</module>
+        <module>fastbee-ruleEngine</module>
+        <module>fastbee-pay</module>
+    </modules>
+
+</project>

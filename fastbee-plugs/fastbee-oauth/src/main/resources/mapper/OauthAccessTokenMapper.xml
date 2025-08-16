@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fastbee.oauth.mapper.OauthAccessTokenMapper">
+
+    <resultMap id="BaseResult" type="com.fastbee.oauth.domain.OauthAccessToken">
+        <result column="token_id" property="tokenId"></result>
+        <result column="token" property="token"></result>
+        <result column="authentication_id" property="authenticationId"></result>
+        <result column="user_name" property="userName"></result>
+        <result column="client_id" property="clientId"></result>
+        <result column="authentication" property="authentication"></result>
+        <result column="refresh_token" property="refreshToken"></result>
+        <result column="open_id" property="openId"></result>
+        <result column="user_id" property="userId"></result>
+        <result column="expires_time" property="expiresTime"></result>
+    </resultMap>
+
+    <sql id="selectOauthAccessTokenVo">
+        select token_id, token, authentication_id, user_name, client_id, authentication, refresh_token, open_id, user_id, expires_time from oauth_access_token
+    </sql>
+
+    <update id="updateOpenIdByTokenId">
+        update oauth_access_token
+        set open_id = #{openUid}
+        where token_id = #{tokenId}
+    </update>
+
+    <delete id="deleteByUserId">
+        delete
+        from oauth_access_token
+        where user_id = #{userId}
+    </delete>
+
+    <select id="selectUserNameByTokenId" resultType="java.lang.String">
+        select user_name
+        from oauth_access_token
+        where token_id = #{tokenId}
+    </select>
+
+    <select id="selectByTokenId" resultType="com.fastbee.oauth.domain.OauthAccessToken">
+        <include refid="selectOauthAccessTokenVo"/>
+        where token_id = #{tokenId}
+    </select>
+
+    <select id="selectByUserName" resultType="com.fastbee.oauth.domain.OauthAccessToken">
+        <include refid="selectOauthAccessTokenVo"/>
+        where user_name = #{userName}
+    </select>
+
+    <insert id="insertOauthAccessToken" parameterType="OauthAccessToken">
+        insert into oauth_access_token
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="tokenId != null">token_id,</if>
+            <if test="token != null">token,</if>
+            <if test="authenticationId != null">authentication_id,</if>
+            <if test="userName != null">user_name,</if>
+            <if test="clientId != null">client_id,</if>
+            <if test="authentication != null">authentication,</if>
+            <if test="refreshToken != null">refresh_token,</if>
+            <if test="openId != null">open_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="expiresTime != null">expires_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="tokenId != null">#{tokenId},</if>
+            <if test="token != null">#{token},</if>
+            <if test="authenticationId != null">#{authenticationId},</if>
+            <if test="userName != null">#{userName},</if>
+            <if test="clientId != null">#{clientId},</if>
+            <if test="authentication != null">#{authentication},</if>
+            <if test="refreshToken != null">#{refreshToken},</if>
+            <if test="openId != null">#{openId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="expiresTime != null">#{expiresTime},</if>
+        </trim>
+    </insert>
+
+</mapper>

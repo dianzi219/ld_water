@@ -1,0 +1,215 @@
+# 项目相关配置
+fastbee:
+  name: fastbee             # 名称
+  version: 3.8.5            # 版本
+  copyrightYear: 2023       # 版权年份
+  demoEnabled: true         # 实例演示开关
+  # 文件路径，以uploadPath结尾 示例（ Windows配置 D:/uploadPath，Linux配置 /uploadPath）  /home/landdev/uploadPath
+  profile: D:/uploadPath
+  addressEnabled: true      # 获取ip地址开关
+  captchaType: math         # 验证码类型 math 数组计算 char 字符验证
+
+# 开发环境配置
+server:
+  port: 8080                # 服务器的HTTP端口，默认为8080
+  servlet:
+    context-path: /         # 应用的访问路径
+  tomcat:
+    uri-encoding: UTF-8     # tomcat的URI编码
+    accept-count: 1000      # 连接数满后的排队数，默认为100
+    threads:
+      max: 800              # tomcat最大线程数，默认为200
+      min-spare: 100        # Tomcat启动初始化的线程数，默认值10
+  # 基于netty的服务器
+  broker:
+    enabled: true           # mqttBroker类型选择, true: 基于netty的mqttBroker和webSocket  false: emq的mqttBroker
+    broker-node: node1
+    port: 1883
+    openws: true
+    websocket-port: 8083
+    websocket-path: /mqtt
+    keep-alive: 70          # 默认的全部客户端心跳上传时间
+  #TCP服务端口
+  tcp:
+    enabled: true          # 控制tcp端口是否开启
+    port: 8085
+    keep-alive: 70
+    delimiter: 0x7e
+  udp:
+    enabled: false          # 控制udp端口是否开启
+    port: 8889
+    read-idle: 300          # udp保活时间 默认5分钟
+  http:
+    enabled: false
+    port: 8081
+    auth:
+      type: Basic          # 支持Basic，Digest
+      user:
+        name: fastbee
+        password: fastbee
+  coap:
+    enabled: false
+    port: 5683
+
+# Spring配置
+spring:
+  # 环境配置，dev=开发环境，prod=生产环境
+  profiles:
+    active: dev               # 环境配置，dev=开发环境，prod=生产环境
+  # 资源信息
+  messages:
+    # 国际化资源文件路径
+    basename: i18n/messages
+  # 文件上传
+  servlet:
+    multipart:
+      max-file-size:  10MB                             # 单个文件大小
+      max-request-size:  20MB                          # 设置总上传的文件大小
+  # 服务模块
+  devtools:
+    restart:
+      enabled: true                                    # 热部署开关
+  task:
+    execution:
+      pool:
+        core-size: 20                                  # 最小连接数
+        max-size: 200                                  # 最大连接数
+        queue-capacity: 3000                           # 最大容量
+        keep-alive: 60
+  # 缓存配置
+  cache:
+    enable: false
+    type: none                # none=不使用缓存 redis=使用redis缓存
+    ttl: 1800                 # 缓存过期时间（默认60秒）
+  datasource:
+    druid:
+      webStatFilter:
+        enabled: true
+      stat-view-servlet:
+        enabled: true
+        allow:
+        url-pattern: /druid/*
+        loginUsername: fastbee
+        loginPassword: fastbee
+
+# 用户配置
+user:
+  password:
+    maxRetryCount: 5                                    # 密码最大错误次数
+    lockTime: 10                                        # 密码锁定时间（默认10分钟）
+
+# token配置
+token:
+  header: Authorization                                 # 令牌自定义标识
+  secret: abcdefghijklfastbeesmartrstuvwxyz             # 令牌密钥
+  expireTime: 1440                                      # 令牌有效期（默认30分钟）1440为一天
+
+# MyBatis配置
+#mybatis:
+#  typeAliasesPackage: com.fastbee.**.domain             # 搜索指定包别名
+#  mapperLocations: classpath*:mapper/**/*Mapper.xml     # 配置mapper的扫描，找到所有的mapper.xml映射文件
+#  configLocation: classpath:mybatis/mybatis-config.xml  # 加载全局的配置文件
+
+# mybatis-plus配置
+mybatis-plus:
+  typeAliasesPackage: com.fastbee.**.domain             # 搜索指定包别名
+  mapperLocations: classpath*:mapper/**/*Mapper.xml     # 配置mapper的扫描，找到所有的mapper.xml映射文件
+  configLocation: classpath:mybatis/mybatis-config.xml  # 加载全局的配置文件
+  global-config:
+    db-config:
+      id-type: AUTO # 自增 ID
+      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+
+# PageHelper分页插件
+pagehelper:
+  helperDialect: mysql
+  supportMethodsArguments: true
+  params: count=countSql
+
+# 防止XSS攻击
+xss:
+  enabled: true                                         # 过滤开关
+  excludes: /system/notice                              # 排除链接（多个用逗号分隔）
+  urlPatterns: /system/*,/monitor/*,/tool/*             # 匹配链接
+
+# EMQX API配置需要在运行emqx之后去EMQX管理后台手动创建API Key和Secret，并配置到application.yml中
+emqx:
+  host: localhost                                            # EMQX服务器地址
+  port: 18083
+  ApiKey: ApiKey                                             # EMQX API Key
+  ApiSecret: ApiSecret                                       # EMQX API Secret
+
+# redisson 配置
+redisson:
+  # redis key前缀
+  keyPrefix: sql_cache
+  # 线程池数量
+  threads: 16
+  # Netty线程池数量
+  nettyThreads: 32
+  # 单节点配置
+  singleServerConfig:
+    # 客户端名称
+    clientName: ${fastbee.name}
+    # 最小空闲连接数
+    connectionMinimumIdleSize: 32
+    # 连接池大小
+    connectionPoolSize: 64
+    # 连接空闲超时，单位：毫秒
+    idleConnectionTimeout: 10000
+    # 命令等待超时，单位：毫秒
+    timeout: 3000
+    # 发布和订阅连接池大小
+    subscriptionConnectionPoolSize: 50
+
+forest:                        # Forest配置 版本为1.5.36
+  backend: okhttp3             # 后端HTTP框架（默认为 okhttp3）
+  max-connections: 1000        # 连接池最大连接数（默认为 500）
+  max-route-connections: 500   # 每个路由的最大连接数（默认为 500）
+  max-request-queue-size: 100  # [自v1.5.22版本起可用] 最大请求等待队列大小
+  max-async-thread-size: 300   # [自v1.5.21版本起可用] 最大异步线程数
+  max-async-queue-size: 16     # [自v1.5.22版本起可用] 最大异步线程池队列大小
+  connect-timeout: 3000        # 连接超时时间，单位为毫秒（默认为 timeout）
+  read-timeout: 3000           # 数据读取超时时间，单位为毫秒（默认为 timeout）
+  max-retry-count: 0           # 请求失败后重试次数（默认为 0 次不重试）
+  ssl-protocol: TLS            # 单向验证的HTTPS的默认TLS协议（默认为 TLS）
+  log-enabled: true            # 打开或关闭日志（默认为 true）
+  log-request: true            # 打开/关闭Forest请求日志（默认为 true）
+  log-response-status: true    # 打开/关闭Forest响应状态日志（默认为 true）
+  log-response-content: true   # 打开/关闭Forest响应内容日志（默认为 false）
+  async-mode: platform         # [自v1.5.27版本起可用] 异步模式（默认为 platform）
+
+liteflow:
+  #FlowExecutor的execute2Future的线程数，默认为64
+  main-executor-works: 64
+  #FlowExecutor的execute2Future的自定义线程池Builder
+  main-executor-class: com.fastbee.ruleEngine.config.MainExecutorBuilder
+  #并行节点的线程池Builder
+  thread-executor-class: com.fastbee.ruleEngine.config.WhenExecutorBuilder
+  rule-source-ext-data-map:
+    # 应用名称，规则链和脚本组件名称需要一致，不要修改
+    applicationName: fastbee
+    #是否开启SQL日志
+    sqlLogEnabled: true
+    # 规则多时，启用快速加载模式
+    fast-load: false
+    #是否开启SQL数据轮询自动刷新机制 默认不开启
+    pollingEnabled: false
+    pollingIntervalSeconds: 60
+    pollingStartSeconds: 60
+    #以下是chain表的配置
+    chainTableName: iot_scene
+    chainApplicationNameField: application_name
+    chainNameField: chain_name
+    elDataField: el_data
+    chainEnableField: enable
+    #以下是script表的配置
+    scriptTableName: iot_script
+    scriptApplicationNameField: application_name
+    scriptIdField: script_id
+    scriptNameField: script_name
+    scriptDataField: script_data
+    scriptTypeField: script_type
+    scriptLanguageField: script_language
+    scriptEnableField: enable
